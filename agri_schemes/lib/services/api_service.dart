@@ -31,4 +31,45 @@ class ApiService {
       throw Exception('Error connecting to API: $e');
     }
   }
+
+  // ─────────────────────────────────────────────────
+  // Weather API
+  // ─────────────────────────────────────────────────
+  Future<Map<String, dynamic>?> getWeather(double lat, double lon) async {
+    try {
+      final response = await http.get(
+        Uri.parse('$baseUrl/api/weather?lat=$lat&lon=$lon'),
+      );
+      if (response.statusCode == 200) {
+        return json.decode(response.body) as Map<String, dynamic>;
+      }
+      return null;
+    } catch (e) {
+      debugPrint('Weather API error: $e');
+      return null;
+    }
+  }
+
+  // ─────────────────────────────────────────────────
+  // Market Prices API
+  // ─────────────────────────────────────────────────
+  Future<Map<String, dynamic>?> getMarketPrices(
+    String state, {
+    String? crop,
+  }) async {
+    try {
+      String url =
+          '$baseUrl/api/market-prices?state=${Uri.encodeComponent(state)}';
+      if (crop != null) url += '&crop=${Uri.encodeComponent(crop)}';
+
+      final response = await http.get(Uri.parse(url));
+      if (response.statusCode == 200) {
+        return json.decode(response.body) as Map<String, dynamic>;
+      }
+      return null;
+    } catch (e) {
+      debugPrint('Market Prices API error: $e');
+      return null;
+    }
+  }
 }

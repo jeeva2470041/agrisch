@@ -6,6 +6,7 @@ import 'package:hive_flutter/hive_flutter.dart';
 import 'l10n/app_localizations.dart';
 import 'services/language_service.dart';
 import 'services/tts_service.dart';
+import 'services/stt_service.dart';
 import 'screens/landing_screen.dart';
 
 /// Main entry point for the AgriSchemes application
@@ -18,13 +19,16 @@ void main() async {
   await Hive.initFlutter(); // Initialize Hive
   final languageService = LanguageService();
   final ttsService = TtsService();
+  final sttService = SttService();
 
-  // Load saved language preference and initialize TTS
+  // Load saved language preference and initialize TTS + STT
   await languageService.init();
   await ttsService.init();
+  await sttService.init();
 
-  // Set TTS language to match saved preference
+  // Set TTS/STT language to match saved preference
   await ttsService.setLanguage(languageService.ttsLanguageCode);
+  sttService.setLanguage(languageService.ttsLanguageCode);
 
   runApp(
     // Wrap app with MultiProvider for dependency injection
@@ -34,6 +38,8 @@ void main() async {
         ChangeNotifierProvider.value(value: languageService),
         // TTS service for voice output
         ChangeNotifierProvider.value(value: ttsService),
+        // STT service for voice input
+        ChangeNotifierProvider.value(value: sttService),
       ],
       child: const AgriSchemesApp(),
     ),

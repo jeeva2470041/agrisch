@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:geocoding/geocoding.dart';
+import 'package:provider/provider.dart';
 import '../l10n/app_localizations.dart';
 import '../data/constants.dart';
 import '../models/farmer_input_model.dart';
+import '../services/stt_service.dart';
 import 'scheme_recommendation_screen.dart';
 
 /// Farmer Input Screen — Premium UI with searchable state picker
@@ -19,11 +20,11 @@ class FarmerInputScreen extends StatefulWidget {
 class _FarmerInputScreenState extends State<FarmerInputScreen>
     with SingleTickerProviderStateMixin {
   final _formKey = GlobalKey<FormState>();
-  final _landSizeController = TextEditingController();
 
   String? _selectedCrop;
   String? _selectedSeason;
   String? _selectedState;
+  double _landSize = 1.0; // Default 1 hectare
   bool _isGettingLocation = false;
 
   late AnimationController _animController;
@@ -49,7 +50,6 @@ class _FarmerInputScreenState extends State<FarmerInputScreen>
 
   @override
   void dispose() {
-    _landSizeController.dispose();
     _animController.dispose();
     super.dispose();
   }
@@ -68,7 +68,7 @@ class _FarmerInputScreenState extends State<FarmerInputScreen>
 
       final farmerInput = FarmerInputModel(
         cropType: _selectedCrop!,
-        landSize: double.parse(_landSizeController.text),
+        landSize: _landSize,
         season: _selectedSeason!,
         state: _selectedState!,
       );
@@ -170,6 +170,24 @@ class _FarmerInputScreenState extends State<FarmerInputScreen>
     }
   }
 
+  /// Open a bottom sheet with searchable list for crop selection
+  void _openCropPicker() {
+    final localizations = AppLocalizations.of(context);
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (ctx) => _CropPickerSheet(
+        selectedCrop: _selectedCrop,
+        localizations: localizations,
+        onCropSelected: (crop) {
+          setState(() => _selectedCrop = crop);
+          Navigator.pop(ctx);
+        },
+      ),
+    );
+  }
+
   /// Open a bottom sheet with searchable list for state selection
   void _openStatePicker() {
     final localizations = AppLocalizations.of(context);
@@ -239,7 +257,7 @@ class _FarmerInputScreenState extends State<FarmerInputScreen>
                         child: Padding(
                           padding: EdgeInsets.only(bottom: 30),
                           child: Icon(
-                            Icons.agriculture_rounded,
+                            Icons.eco_rounded,
                             size: 50,
                             color: Colors.white38,
                           ),
@@ -295,28 +313,22 @@ class _FarmerInputScreenState extends State<FarmerInputScreen>
                                     padding: const EdgeInsets.all(24),
                                     child: Column(
                                       children: [
-                                        // 1. Crop Type
+                                        // 1. Crop Type — Searchable Picker
                                         _buildSectionLabel(
                                           Icons.grass_rounded,
                                           l.cropType,
                                         ),
                                         const SizedBox(height: 10),
-                                        _buildDropdown(
-                                          hint: l.selectCrop,
-                                          value: _selectedCrop,
-                                          items: _getCropItems(l),
-                                          onChanged: (v) =>
-                                              setState(() => _selectedCrop = v),
-                                        ),
+                                        _buildCropPicker(l),
                                         const SizedBox(height: 28),
 
-                                        // 2. Land Size
+                                        // 2. Land Size — Stepper
                                         _buildSectionLabel(
                                           Icons.square_foot_rounded,
                                           l.landSize,
                                         ),
                                         const SizedBox(height: 10),
-                                        _buildLandSizeField(l),
+                                        _buildLandSizeStepper(l),
                                         const SizedBox(height: 28),
 
                                         // 3. Season
@@ -445,45 +457,186 @@ class _FarmerInputScreenState extends State<FarmerInputScreen>
     );
   }
 
-  Widget _buildDropdown({
-    required String hint,
-    required String? value,
-    required List<DropdownMenuItem<String>> items,
-    required ValueChanged<String?> onChanged,
-  }) {
-    return DropdownButtonFormField<String>(
-      value: value,
-      hint: Text(hint, style: TextStyle(color: Colors.grey.shade500)),
-      items: items,
-      onChanged: onChanged,
-      decoration: _inputDecoration(),
-      dropdownColor: Colors.white,
-      borderRadius: BorderRadius.circular(16),
-      icon: const Icon(Icons.keyboard_arrow_down_rounded, color: _accentGreen),
-      style: const TextStyle(fontSize: 15, color: Color(0xFF2D3436)),
+  /// Crop picker — tap to open searchable bottom sheet
+  Widget _buildCropPicker(AppLocalizations l) {
+    return InkWell(
+      onTap: _openCropPicker,
+      borderRadius: BorderRadius.circular(14),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 15),
+        decoration: BoxDecoration(
+          color: Colors.grey.shade50,
+          borderRadius: BorderRadius.circular(14),
+          border: Border.all(
+            color: _selectedCrop != null ? _accentGreen : Colors.grey.shade300,
+            width: _selectedCrop != null ? 2 : 1,
+          ),
+        ),
+        child: Row(
+          children: [
+            if (_selectedCrop != null) ...[
+              Text(
+                _cropEmoji(_selectedCrop!),
+                style: const TextStyle(fontSize: 20),
+              ),
+              const SizedBox(width: 10),
+            ],
+            Expanded(
+              child: Text(
+                _selectedCrop != null
+                    ? _getCropDisplayName(l, _selectedCrop!)
+                    : l.selectCrop,
+                style: TextStyle(
+                  fontSize: 15,
+                  fontWeight: _selectedCrop != null
+                      ? FontWeight.w500
+                      : FontWeight.w400,
+                  color: _selectedCrop != null
+                      ? const Color(0xFF2D3436)
+                      : Colors.grey.shade500,
+                ),
+              ),
+            ),
+            Icon(
+              Icons.arrow_drop_down_rounded,
+              color: _selectedCrop != null
+                  ? _accentGreen
+                  : Colors.grey.shade400,
+              size: 28,
+            ),
+          ],
+        ),
+      ),
     );
   }
 
-  Widget _buildLandSizeField(AppLocalizations l) {
-    return TextFormField(
-      controller: _landSizeController,
-      keyboardType: const TextInputType.numberWithOptions(decimal: true),
-      inputFormatters: [
-        FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d*')),
+  /// Land size stepper — adjustable buttons + quick-select chips
+  Widget _buildLandSizeStepper(AppLocalizations l) {
+    return Column(
+      children: [
+        // Main stepper row
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+          decoration: BoxDecoration(
+            color: Colors.grey.shade50,
+            borderRadius: BorderRadius.circular(14),
+            border: Border.all(color: Colors.grey.shade300),
+          ),
+          child: Row(
+            children: [
+              // Minus button
+              _stepperButton(
+                icon: Icons.remove_rounded,
+                onTap: _landSize > 0.5
+                    ? () => setState(
+                        () => _landSize = (_landSize - 0.5).clamp(0.5, 100.0),
+                      )
+                    : null,
+              ),
+              // Value display
+              Expanded(
+                child: Column(
+                  children: [
+                    Text(
+                      _landSize == _landSize.toInt()
+                          ? '${_landSize.toInt()}'
+                          : _landSize.toStringAsFixed(1),
+                      style: const TextStyle(
+                        fontSize: 32,
+                        fontWeight: FontWeight.w700,
+                        color: Color(0xFF2D3436),
+                      ),
+                    ),
+                    Text(
+                      'hectares',
+                      style: TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w500,
+                        color: Colors.grey.shade500,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              // Plus button
+              _stepperButton(
+                icon: Icons.add_rounded,
+                onTap: _landSize < 100
+                    ? () => setState(
+                        () => _landSize = (_landSize + 0.5).clamp(0.5, 100.0),
+                      )
+                    : null,
+              ),
+            ],
+          ),
+        ),
+        const SizedBox(height: 12),
+        // Quick-select chips
+        Row(
+          children: [0.5, 1, 2, 3, 5, 10].map((v) {
+            final val = v.toDouble();
+            final isSelected = _landSize == val;
+            return Expanded(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 3),
+                child: Material(
+                  color: Colors.transparent,
+                  child: InkWell(
+                    onTap: () => setState(() => _landSize = val),
+                    borderRadius: BorderRadius.circular(10),
+                    child: AnimatedContainer(
+                      duration: const Duration(milliseconds: 200),
+                      padding: const EdgeInsets.symmetric(vertical: 8),
+                      decoration: BoxDecoration(
+                        color: isSelected
+                            ? _primaryGreen
+                            : Colors.grey.shade100,
+                        borderRadius: BorderRadius.circular(10),
+                        border: Border.all(
+                          color: isSelected
+                              ? _primaryGreen
+                              : Colors.grey.shade300,
+                        ),
+                      ),
+                      child: Center(
+                        child: Text(
+                          v == v.toInt() ? '${v.toInt()}' : '$v',
+                          style: TextStyle(
+                            fontSize: 13,
+                            fontWeight: FontWeight.w600,
+                            color: isSelected
+                                ? Colors.white
+                                : Colors.grey.shade700,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            );
+          }).toList(),
+        ),
       ],
-      validator: (value) {
-        if (value == null || value.isEmpty) return l.pleaseEnterLandSize;
-        if (double.tryParse(value) == null) return l.pleaseEnterLandSize;
-        return null;
-      },
-      style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w500),
-      decoration: _inputDecoration().copyWith(
-        hintText: l.landSizeHint,
-        suffixText: 'ha',
-        suffixStyle: TextStyle(
-          color: _accentGreen,
-          fontWeight: FontWeight.w600,
-          fontSize: 14,
+    );
+  }
+
+  Widget _stepperButton({required IconData icon, VoidCallback? onTap}) {
+    final isDisabled = onTap == null;
+    return Material(
+      color: isDisabled ? Colors.grey.shade200 : _accentGreen,
+      borderRadius: BorderRadius.circular(12),
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(12),
+        child: SizedBox(
+          width: 48,
+          height: 48,
+          child: Icon(
+            icon,
+            color: isDisabled ? Colors.grey.shade400 : Colors.white,
+            size: 24,
+          ),
         ),
       ),
     );
@@ -683,55 +836,344 @@ class _FarmerInputScreenState extends State<FarmerInputScreen>
     );
   }
 
-  InputDecoration _inputDecoration() {
-    return InputDecoration(
-      contentPadding: const EdgeInsets.symmetric(horizontal: 18, vertical: 15),
-      border: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(14),
-        borderSide: BorderSide(color: Colors.grey.shade300),
+  // ═══════════════════════════════════════════════════
+  //  HELPERS
+  // ═══════════════════════════════════════════════════
+
+  String _cropEmoji(String crop) {
+    const map = {
+      'Rice': '🌾',
+      'Wheat': '🌾',
+      'Cotton': '🏵️',
+      'Sugarcane': '🎋',
+      'Maize': '🌽',
+      'Pulses': '🫘',
+      'Millets': '🌾',
+      'Groundnut': '🥜',
+      'Soybean': '🫘',
+      'Coconut': '🥥',
+      'Vegetables': '🥬',
+      'Fruits': '🍎',
+      'Tea': '🍵',
+      'Coffee': '☕',
+      'Spices': '🌶️',
+      'Oilseeds': '🌻',
+      'Jute': '🧵',
+      'Tobacco': '🍂',
+    };
+    return map[crop] ?? '🌱';
+  }
+
+  String _getCropDisplayName(AppLocalizations l, String cropValue) {
+    final map = {
+      CropTypes.rice: l.rice,
+      CropTypes.wheat: l.wheat,
+      CropTypes.cotton: l.cotton,
+      CropTypes.sugarcane: l.sugarcane,
+      CropTypes.maize: l.maize,
+      CropTypes.pulses: l.pulses,
+      CropTypes.millets: l.millets,
+      CropTypes.groundnut: l.groundnut,
+      CropTypes.soybean: l.soybean,
+      CropTypes.coconut: l.coconut,
+      CropTypes.vegetables: l.vegetables,
+      CropTypes.fruits: l.fruits,
+      CropTypes.tea: l.tea,
+      CropTypes.coffee: l.coffee,
+      CropTypes.spices: l.spices,
+      CropTypes.oilseeds: l.oilseeds,
+      CropTypes.jute: l.jute,
+      CropTypes.tobacco: l.tobacco,
+    };
+    return map[cropValue] ?? cropValue;
+  }
+}
+
+// ═══════════════════════════════════════════════════════════════
+// SEARCHABLE CROP PICKER — Bottom Sheet
+// ═══════════════════════════════════════════════════════════════
+
+class _CropPickerSheet extends StatefulWidget {
+  final String? selectedCrop;
+  final AppLocalizations localizations;
+  final ValueChanged<String> onCropSelected;
+
+  const _CropPickerSheet({
+    required this.selectedCrop,
+    required this.localizations,
+    required this.onCropSelected,
+  });
+
+  @override
+  State<_CropPickerSheet> createState() => _CropPickerSheetState();
+}
+
+class _CropPickerSheetState extends State<_CropPickerSheet> {
+  final _searchController = TextEditingController();
+  String _query = '';
+
+  // All crops with their keys, values, and emoji icons
+  static const _crops = [
+    ('Rice', 'rice', '🌾'),
+    ('Wheat', 'wheat', '🌾'),
+    ('Cotton', 'cotton', '🏵️'),
+    ('Sugarcane', 'sugarcane', '🎋'),
+    ('Maize', 'maize', '🌽'),
+    ('Pulses', 'pulses', '🫘'),
+    ('Millets', 'millets', '🌾'),
+    ('Groundnut', 'groundnut', '🥜'),
+    ('Soybean', 'soybean', '🫘'),
+    ('Coconut', 'coconut', '🥥'),
+    ('Vegetables', 'vegetables', '🥬'),
+    ('Fruits', 'fruits', '🍎'),
+    ('Tea', 'tea', '🍵'),
+    ('Coffee', 'coffee', '☕'),
+    ('Spices', 'spices', '🌶️'),
+    ('Oilseeds', 'oilseeds', '🌻'),
+    ('Jute', 'jute', '🧵'),
+    ('Tobacco', 'tobacco', '🍂'),
+  ];
+
+  List<(String, String, String)> get _filteredCrops {
+    if (_query.isEmpty) return _crops;
+    return _crops.where((c) {
+      final localName = widget.localizations.translate(c.$2).toLowerCase();
+      return c.$1.toLowerCase().contains(_query) || localName.contains(_query);
+    }).toList();
+  }
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final l = widget.localizations;
+    final crops = _filteredCrops;
+
+    return Container(
+      height: MediaQuery.of(context).size.height * 0.65,
+      decoration: const BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
       ),
-      enabledBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(14),
-        borderSide: BorderSide(color: Colors.grey.shade300),
+      child: Column(
+        children: [
+          // Drag handle
+          Container(
+            margin: const EdgeInsets.only(top: 12),
+            width: 40,
+            height: 4,
+            decoration: BoxDecoration(
+              color: Colors.grey.shade300,
+              borderRadius: BorderRadius.circular(4),
+            ),
+          ),
+
+          // Title
+          Padding(
+            padding: const EdgeInsets.fromLTRB(24, 16, 24, 8),
+            child: Text(
+              l.selectCrop,
+              style: const TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.w700,
+                color: Color(0xFF1B5E20),
+              ),
+            ),
+          ),
+
+          // Search bar with mic
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+            child: Row(
+              children: [
+                Expanded(
+                  child: TextField(
+                    controller: _searchController,
+                    onChanged: (v) => setState(() => _query = v.toLowerCase()),
+                    decoration: InputDecoration(
+                      hintText: 'Search crops...',
+                      prefixIcon: const Icon(Icons.search_rounded, size: 22),
+                      suffixIcon: _query.isNotEmpty
+                          ? IconButton(
+                              icon: const Icon(Icons.clear_rounded, size: 20),
+                              onPressed: () {
+                                _searchController.clear();
+                                setState(() => _query = '');
+                              },
+                            )
+                          : null,
+                      contentPadding: const EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 12,
+                      ),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(14),
+                        borderSide: BorderSide(color: Colors.grey.shade300),
+                      ),
+                      enabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(14),
+                        borderSide: BorderSide(color: Colors.grey.shade300),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(14),
+                        borderSide: const BorderSide(
+                          color: Color(0xFF43A047),
+                          width: 2,
+                        ),
+                      ),
+                      filled: true,
+                      fillColor: Colors.grey.shade50,
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 8),
+                _buildMicButton(context),
+              ],
+            ),
+          ),
+
+          // Crop list
+          Expanded(
+            child: crops.isEmpty
+                ? Center(
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(
+                          Icons.search_off_rounded,
+                          size: 48,
+                          color: Colors.grey.shade400,
+                        ),
+                        const SizedBox(height: 12),
+                        Text(
+                          'No crops found',
+                          style: TextStyle(color: Colors.grey.shade500),
+                        ),
+                      ],
+                    ),
+                  )
+                : ListView.builder(
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    itemCount: crops.length,
+                    itemBuilder: (context, index) {
+                      final c = crops[index];
+                      final isSelected = widget.selectedCrop == c.$1;
+                      final localName = l.translate(c.$2);
+
+                      return Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 2),
+                        child: Material(
+                          color: isSelected
+                              ? const Color(0xFFE8F5E9)
+                              : Colors.transparent,
+                          borderRadius: BorderRadius.circular(12),
+                          child: InkWell(
+                            onTap: () => widget.onCropSelected(c.$1),
+                            borderRadius: BorderRadius.circular(12),
+                            child: Padding(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 16,
+                                vertical: 14,
+                              ),
+                              child: Row(
+                                children: [
+                                  Text(
+                                    c.$3,
+                                    style: const TextStyle(fontSize: 24),
+                                  ),
+                                  const SizedBox(width: 14),
+                                  Expanded(
+                                    child: Text(
+                                      localName,
+                                      style: TextStyle(
+                                        fontSize: 15,
+                                        fontWeight: isSelected
+                                            ? FontWeight.w600
+                                            : FontWeight.w400,
+                                        color: isSelected
+                                            ? const Color(0xFF1B5E20)
+                                            : const Color(0xFF2D3436),
+                                      ),
+                                    ),
+                                  ),
+                                  if (isSelected)
+                                    const Icon(
+                                      Icons.check_circle_rounded,
+                                      color: Color(0xFF43A047),
+                                      size: 22,
+                                    ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+          ),
+          const SizedBox(height: 16),
+        ],
       ),
-      focusedBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(14),
-        borderSide: const BorderSide(color: _accentGreen, width: 2),
-      ),
-      errorBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(14),
-        borderSide: const BorderSide(color: Colors.redAccent),
-      ),
-      filled: true,
-      fillColor: Colors.grey.shade50,
     );
   }
 
-  // ═══════════════════════════════════════════════════
-  //  DROPDOWN DATA
-  // ═══════════════════════════════════════════════════
-
-  List<DropdownMenuItem<String>> _getCropItems(AppLocalizations l) {
-    return [
-      DropdownMenuItem(value: CropTypes.rice, child: Text(l.rice)),
-      DropdownMenuItem(value: CropTypes.wheat, child: Text(l.wheat)),
-      DropdownMenuItem(value: CropTypes.cotton, child: Text(l.cotton)),
-      DropdownMenuItem(value: CropTypes.sugarcane, child: Text(l.sugarcane)),
-      DropdownMenuItem(value: CropTypes.maize, child: Text(l.maize)),
-      DropdownMenuItem(value: CropTypes.pulses, child: Text(l.pulses)),
-      DropdownMenuItem(value: CropTypes.millets, child: Text(l.millets)),
-      DropdownMenuItem(value: CropTypes.groundnut, child: Text(l.groundnut)),
-      DropdownMenuItem(value: CropTypes.soybean, child: Text(l.soybean)),
-      DropdownMenuItem(value: CropTypes.coconut, child: Text(l.coconut)),
-      DropdownMenuItem(value: CropTypes.vegetables, child: Text(l.vegetables)),
-      DropdownMenuItem(value: CropTypes.fruits, child: Text(l.fruits)),
-      DropdownMenuItem(value: CropTypes.tea, child: Text(l.tea)),
-      DropdownMenuItem(value: CropTypes.coffee, child: Text(l.coffee)),
-      DropdownMenuItem(value: CropTypes.spices, child: Text(l.spices)),
-      DropdownMenuItem(value: CropTypes.oilseeds, child: Text(l.oilseeds)),
-      DropdownMenuItem(value: CropTypes.jute, child: Text(l.jute)),
-      DropdownMenuItem(value: CropTypes.tobacco, child: Text(l.tobacco)),
-    ];
+  Widget _buildMicButton(BuildContext context) {
+    final stt = Provider.of<SttService>(context);
+    return GestureDetector(
+      onTap: () async {
+        if (stt.isListening) {
+          await stt.stopListening();
+        } else {
+          final started = await stt.startListening(
+            onResult: (text) {
+              _searchController.text = text;
+              setState(() => _query = text.toLowerCase());
+            },
+          );
+          if (!started && context.mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(
+                  stt.errorMessage.isNotEmpty
+                      ? stt.errorMessage
+                      : 'Microphone not available',
+                ),
+                backgroundColor: Colors.red,
+              ),
+            );
+          }
+        }
+      },
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 300),
+        width: 48,
+        height: 48,
+        decoration: BoxDecoration(
+          color: stt.isListening
+              ? Colors.red.shade400
+              : const Color(0xFF1B5E20),
+          borderRadius: BorderRadius.circular(14),
+          boxShadow: stt.isListening
+              ? [
+                  BoxShadow(
+                    color: Colors.red.shade200.withValues(alpha: 0.5),
+                    blurRadius: 12,
+                    spreadRadius: 2,
+                  ),
+                ]
+              : null,
+        ),
+        child: Icon(
+          stt.isListening ? Icons.mic_rounded : Icons.mic_none_rounded,
+          color: Colors.white,
+          size: 24,
+        ),
+      ),
+    );
   }
 }
 
@@ -902,46 +1344,54 @@ class _StatePickerSheetState extends State<_StatePickerSheet> {
             ),
           ),
 
-          // Search bar
+          // Search bar with mic
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
-            child: TextField(
-              controller: _searchController,
-              onChanged: (v) => setState(() => _query = v.toLowerCase()),
-              decoration: InputDecoration(
-                hintText: l.searchState,
-                prefixIcon: const Icon(Icons.search_rounded, size: 22),
-                suffixIcon: _query.isNotEmpty
-                    ? IconButton(
-                        icon: const Icon(Icons.clear_rounded, size: 20),
-                        onPressed: () {
-                          _searchController.clear();
-                          setState(() => _query = '');
-                        },
-                      )
-                    : null,
-                contentPadding: const EdgeInsets.symmetric(
-                  horizontal: 16,
-                  vertical: 12,
-                ),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(14),
-                  borderSide: BorderSide(color: Colors.grey.shade300),
-                ),
-                enabledBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(14),
-                  borderSide: BorderSide(color: Colors.grey.shade300),
-                ),
-                focusedBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(14),
-                  borderSide: const BorderSide(
-                    color: Color(0xFF43A047),
-                    width: 2,
+            child: Row(
+              children: [
+                Expanded(
+                  child: TextField(
+                    controller: _searchController,
+                    onChanged: (v) => setState(() => _query = v.toLowerCase()),
+                    decoration: InputDecoration(
+                      hintText: l.searchState,
+                      prefixIcon: const Icon(Icons.search_rounded, size: 22),
+                      suffixIcon: _query.isNotEmpty
+                          ? IconButton(
+                              icon: const Icon(Icons.clear_rounded, size: 20),
+                              onPressed: () {
+                                _searchController.clear();
+                                setState(() => _query = '');
+                              },
+                            )
+                          : null,
+                      contentPadding: const EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 12,
+                      ),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(14),
+                        borderSide: BorderSide(color: Colors.grey.shade300),
+                      ),
+                      enabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(14),
+                        borderSide: BorderSide(color: Colors.grey.shade300),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(14),
+                        borderSide: const BorderSide(
+                          color: Color(0xFF43A047),
+                          width: 2,
+                        ),
+                      ),
+                      filled: true,
+                      fillColor: Colors.grey.shade50,
+                    ),
                   ),
                 ),
-                filled: true,
-                fillColor: Colors.grey.shade50,
-              ),
+                const SizedBox(width: 8),
+                _buildMicButton(context),
+              ],
             ),
           ),
 
@@ -1067,6 +1517,61 @@ class _StatePickerSheetState extends State<_StatePickerSheet> {
               ],
             ),
           ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildMicButton(BuildContext context) {
+    final stt = Provider.of<SttService>(context);
+    return GestureDetector(
+      onTap: () async {
+        if (stt.isListening) {
+          await stt.stopListening();
+        } else {
+          final started = await stt.startListening(
+            onResult: (text) {
+              _searchController.text = text;
+              setState(() => _query = text.toLowerCase());
+            },
+          );
+          if (!started && context.mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(
+                  stt.errorMessage.isNotEmpty
+                      ? stt.errorMessage
+                      : 'Microphone not available',
+                ),
+                backgroundColor: Colors.red,
+              ),
+            );
+          }
+        }
+      },
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 300),
+        width: 48,
+        height: 48,
+        decoration: BoxDecoration(
+          color: stt.isListening
+              ? Colors.red.shade400
+              : const Color(0xFF1B5E20),
+          borderRadius: BorderRadius.circular(14),
+          boxShadow: stt.isListening
+              ? [
+                  BoxShadow(
+                    color: Colors.red.shade200.withValues(alpha: 0.5),
+                    blurRadius: 12,
+                    spreadRadius: 2,
+                  ),
+                ]
+              : null,
+        ),
+        child: Icon(
+          stt.isListening ? Icons.mic_rounded : Icons.mic_none_rounded,
+          color: Colors.white,
+          size: 24,
         ),
       ),
     );

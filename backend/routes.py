@@ -6,6 +6,8 @@ import re
 from flask import Blueprint, request, jsonify
 from db import get_schemes_collection
 from config import DEFAULT_PAGE_SIZE, MAX_PAGE_SIZE
+from weather_service import get_weather
+from market_service import get_market_prices
 
 api_bp = Blueprint("api", __name__)
 
@@ -251,3 +253,57 @@ def add_scheme():
 
     except Exception as exc:
         return jsonify({"error": f"Internal server error: {exc}"}), 500
+
+
+# ---------------------------------------------------------------------------
+# GET /api/weather  —  Weather forecast (Open-Meteo proxy)
+# ---------------------------------------------------------------------------
+@api_bp.route("/weather", methods=["GET"])
+def weather():
+    """Return current weather + 5-day forecast for given coordinates."""
+    try:
+        lat = request.args.get("lat")
+        lon = request.args.get("lon")
+
+        if not lat or not lon:
+            return jsonify({"error": "lat and lon query parameters are required"}), 400
+
+        try:
+            lat = float(lat)
+            lon = float(lon)
+        except (ValueError, TypeError):
+            return jsonify({"error": "lat and lon must be valid numbers"}), 400
+
+        # Validate range
+        if not (-90 <= lat <= 90) or not (-180 <= lon <= 180):
+            return jsonify({"error": "lat must be -90..90, lon must be -180..180"}), 400
+
+        result = get_weather(lat, lon)
+        if result is None:
+            return jsonify({"error": "Failed to fetch weather data"}), 502
+
+        return jsonify({"success": True, **result})
+
+    except Exception as exc:
+        return jsonify({"error": f"Internal server error: {exc}"}), 500
+
+
+# ---------------------------------------------------------------------------
+# GET /api/market-prices  —  Crop market prices
+# ---------------------------------------------------------------------------
+@api_bp.route("/market-prices", methods=["GET"])
+def market_prices():
+    """Return market prices for crops in a given state."""
+    try:
+        state = request.args.get("state", "All")
+        crop = request.args.get("crop")
+
+        if len(state) > 100:
+            return jsonify({"error": "state parameter too long"}), 400
+
+        result = get_market_prices(state, crop)
+        return jsonify({"success": True, **result})
+
+    except Exception as exc:
+        return jsonify({"error": f"Internal server error: {exc}"}), 500
+

@@ -1,5 +1,5 @@
 // Basic Flutter widget test for AgriSchemes app
-// Tests language selection screen rendering
+// Tests landing screen rendering
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -7,12 +7,11 @@ import 'package:provider/provider.dart';
 
 import 'package:agri_schemes/services/language_service.dart';
 import 'package:agri_schemes/services/tts_service.dart';
-import 'package:agri_schemes/screens/language_selection_screen.dart';
+import 'package:agri_schemes/screens/landing_screen.dart';
 import 'package:agri_schemes/l10n/app_localizations.dart';
 
 void main() {
-  testWidgets('Language selection screen renders correctly',
-      (WidgetTester tester) async {
+  testWidgets('Landing screen renders correctly', (WidgetTester tester) async {
     // Create mock services for testing
     final languageService = LanguageService();
     final ttsService = TtsService();
@@ -27,10 +26,8 @@ void main() {
         child: MaterialApp(
           locale: const Locale('en', 'IN'),
           supportedLocales: AppLocalizations.supportedLocales,
-          localizationsDelegates: const [
-            AppLocalizations.delegate,
-          ],
-          home: const LanguageSelectionScreen(),
+          localizationsDelegates: const [AppLocalizations.delegate],
+          home: const LandingScreen(),
         ),
       ),
     );
@@ -38,10 +35,10 @@ void main() {
     // Wait for the widget to build
     await tester.pumpAndSettle();
 
-    // Verify language selection screen is displayed
-    expect(find.byType(LanguageSelectionScreen), findsOneWidget);
+    // Verify landing screen is displayed
+    expect(find.byType(LandingScreen), findsOneWidget);
 
     // Verify agriculture icon is present
-    expect(find.byIcon(Icons.agriculture), findsOneWidget);
+    expect(find.byIcon(Icons.agriculture_rounded), findsOneWidget);
   });
 }

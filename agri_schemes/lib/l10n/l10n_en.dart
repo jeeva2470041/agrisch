@@ -156,4 +156,10 @@ const Map<String, String> englishTranslations = {
 
   'microIrrigationVoice':
       'The Micro Irrigation Scheme provides subsidy for installing drip and sprinkler irrigation systems. You can get up to 55 percent subsidy on the cost. These systems save 30 to 50 percent water compared to traditional flooding methods and increase crop yield by 20 to 30 percent.',
+
+  // Dashboard
+  'weather': 'Weather',
+  'forecast': '5-Day Forecast',
+  'marketPrices': 'Market Prices',
+  'dashboard': 'Dashboard',
 };

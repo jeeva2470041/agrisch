@@ -77,6 +77,12 @@ class AppLocalizations {
   String get pleaseEnterLandSize => translate('pleaseEnterLandSize');
   String get pleaseSelectAllFields => translate('pleaseSelectAllFields');
 
+  // ========== Dashboard ==========
+  String get weather => translate('weather');
+  String get forecast => translate('forecast');
+  String get marketPrices => translate('marketPrices');
+  String get dashboard => translate('dashboard');
+
   // ========== Crop Types ==========
   String get rice => translate('rice');
   String get wheat => translate('wheat');

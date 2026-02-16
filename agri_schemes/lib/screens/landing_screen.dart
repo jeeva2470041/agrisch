@@ -3,7 +3,8 @@ import 'package:provider/provider.dart';
 import '../l10n/app_localizations.dart';
 import '../services/language_service.dart';
 import '../services/tts_service.dart';
-import 'farmer_input_screen.dart';
+import '../services/stt_service.dart';
+import 'dashboard_screen.dart';
 
 /// Landing Screen
 /// First screen shown to the user with AgriTrust branding
@@ -71,6 +72,11 @@ class LandingScreen extends StatelessWidget {
                               await ttsService.setLanguage(
                                 languageService.ttsLanguageCode,
                               );
+                              // Sync STT
+                              Provider.of<SttService>(
+                                context,
+                                listen: false,
+                              ).setLanguage(languageService.ttsLanguageCode);
                             }
                           },
                           items: const [
@@ -99,16 +105,16 @@ class LandingScreen extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Container(
-                    padding: const EdgeInsets.all(20),
+                    padding: const EdgeInsets.all(24),
                     decoration: BoxDecoration(
-                      color: Colors.white.withValues(alpha: 0.2),
+                      color: Colors.white.withValues(alpha: 0.15),
                       shape: BoxShape.circle,
+                      border: Border.all(
+                        color: Colors.white.withValues(alpha: 0.25),
+                        width: 2,
+                      ),
                     ),
-                    child: const Icon(
-                      Icons.agriculture_rounded,
-                      size: 100,
-                      color: Colors.white,
-                    ),
+                    child: const Text('🌾', style: TextStyle(fontSize: 72)),
                   ),
                   const SizedBox(height: 24),
                   const Text(
@@ -150,7 +156,7 @@ class LandingScreen extends StatelessWidget {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => const FarmerInputScreen(),
+                          builder: (context) => const DashboardScreen(),
                         ),
                       );
                     },
