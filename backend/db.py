@@ -19,8 +19,9 @@ def _get_client():
             MONGO_URI,
             maxPoolSize=50,
             retryWrites=True,
-            serverSelectionTimeoutMS=5000,
-            connectTimeoutMS=10000,
+            serverSelectionTimeoutMS=60000, 
+            connectTimeoutMS=60000,
+            socketTimeoutMS=60000,
         )
     return _client
 
