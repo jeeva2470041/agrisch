@@ -41,6 +41,13 @@ def create_app():
         response.headers["Cache-Control"] = "no-store"
         return response
 
+    @app.before_request
+    def _log_request():
+        import logging
+        from flask import request
+        logger = logging.getLogger(__name__)
+        logger.info(f"Incoming: {request.method} {request.url} from {request.remote_addr}")
+
     # --- Register blueprints ---
     app.register_blueprint(api_bp, url_prefix="/api")
 

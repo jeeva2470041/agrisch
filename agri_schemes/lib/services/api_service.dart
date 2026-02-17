@@ -5,12 +5,34 @@ import '../models/farmer_input_model.dart';
 import '../models/scheme_model.dart';
 
 class ApiService {
-  // Use localhost for Web, 10.0.2.2 for Android Emulator
-  // For physical device, change this to your machine's local IP (e.g., 192.168.1.x)
-  static const String _baseUrlAndroidEmulator = 'http://10.0.2.2:5000';
+  // For physical device testing, use your computer's local IP address.
+  // Identified IP: 10.57.27.73
+  static String _baseUrlPhysical = 'http://10.57.27.73:5000';
   static const String _baseUrlWeb = 'http://localhost:5000';
 
-  String get baseUrl => kIsWeb ? _baseUrlWeb : _baseUrlAndroidEmulator;
+  String get baseUrl {
+    if (kIsWeb) return _baseUrlWeb;
+    return _baseUrlPhysical;
+  }
+
+  /// Update the base URL dynamically (for testing different IPs without rebuild)
+  void updateBaseUrl(String newIp) {
+    _baseUrlPhysical = 'http://$newIp:5000';
+    debugPrint('API URL updated to: $_baseUrlPhysical');
+  }
+
+  /// Check if the backend is reachable
+  Future<bool> checkHealth() async {
+    try {
+      final response = await http
+          .get(Uri.parse('$baseUrl/api/'))
+          .timeout(const Duration(seconds: 5));
+      return response.statusCode == 200;
+    } catch (e) {
+      debugPrint('Health check failed: $e');
+      return false;
+    }
+  }
 
   Future<List<SchemeModel>> getEligibleSchemes(FarmerInputModel input) async {
     try {
