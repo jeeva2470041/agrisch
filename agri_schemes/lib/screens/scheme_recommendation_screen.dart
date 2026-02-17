@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import '../l10n/app_localizations.dart';
 import '../models/farmer_input_model.dart';
 import '../models/scheme_model.dart';
+import 'scheme_detail_screen.dart';
 import '../services/scheme_matching_service.dart';
 import '../services/tts_service.dart';
 
@@ -348,31 +349,48 @@ class _SchemeRecommendationScreenState
             ),
             const SizedBox(height: 16),
 
-            // Voice explanation button
+            // Voice explanation button + "How to apply" CTA
             SizedBox(
               width: double.infinity,
-              child: ElevatedButton.icon(
-                onPressed: () => _speakSchemeExplanation(scheme, description),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: isSpeaking
-                      ? Colors.red.shade600
-                      : const Color(0xFF2E7D32),
-                  foregroundColor: Colors.white,
-                  padding: const EdgeInsets.symmetric(vertical: 12),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  ElevatedButton.icon(
+                    onPressed: () => _speakSchemeExplanation(scheme, description),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: isSpeaking
+                          ? Colors.red.shade600
+                          : const Color(0xFF2E7D32),
+                      foregroundColor: Colors.white,
+                      padding: const EdgeInsets.symmetric(vertical: 12),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                    ),
+                    icon: Icon(isSpeaking ? Icons.stop : Icons.volume_up),
+                    label: Text(
+                      isSpeaking ? localizations.stopSpeaking : localizations.listenExplanation,
+                      style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
+                    ),
                   ),
-                ),
-                icon: Icon(isSpeaking ? Icons.stop : Icons.volume_up),
-                label: Text(
-                  isSpeaking
-                      ? localizations.stopSpeaking
-                      : localizations.listenExplanation,
-                  style: const TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w600,
+                  const SizedBox(height: 8),
+                  OutlinedButton.icon(
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (_) => SchemeDetailScreen(scheme: scheme)),
+                      );
+                    },
+                    style: OutlinedButton.styleFrom(
+                      foregroundColor: const Color(0xFF2E7D32),
+                      padding: const EdgeInsets.symmetric(vertical: 12),
+                      side: const BorderSide(color: Color(0xFF2E7D32)),
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                    ),
+                    icon: const Icon(Icons.info_outline, color: Color(0xFF2E7D32)),
+                    label: Text(localizations.howToApply, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600)),
                   ),
-                ),
+                ],
               ),
             ),
           ],

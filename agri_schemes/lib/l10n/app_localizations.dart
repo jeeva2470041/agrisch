@@ -150,6 +150,12 @@ class AppLocalizations {
   // ========== Scheme Recommendation Screen ==========
   String get eligibleSchemes => translate('eligibleSchemes');
   String get noSchemesFound => translate('noSchemesFound');
+  String get howToApply => translate('howToApply');
+  String get documentsChecklist => translate('documentsChecklist');
+  String get eligibilitySummary => translate('eligibilitySummary');
+  String get applyOnline => translate('applyOnline');
+  String get openOfficialPage => translate('openOfficialPage');
+  String get noDocumentsRequired => translate('noDocumentsRequired');
   String get benefitAmount => translate('benefitAmount');
   String get listenExplanation => translate('listenExplanation');
   String get stopSpeaking => translate('stopSpeaking');

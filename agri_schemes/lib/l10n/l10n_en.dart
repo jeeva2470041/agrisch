@@ -98,6 +98,12 @@ const Map<String, String> englishTranslations = {
   // Scheme Recommendation Screen
   'eligibleSchemes': 'Eligible Schemes',
   'noSchemesFound': 'No schemes found for your criteria',
+  'howToApply': 'How to apply',
+  'documentsChecklist': 'Documents checklist',
+  'eligibilitySummary': 'Eligibility',
+  'applyOnline': 'Apply online',
+  'openOfficialPage': 'Open official page',
+  'noDocumentsRequired': 'No documents required',
   'benefitAmount': 'Benefit Amount',
   'listenExplanation': 'Listen to Explanation',
   'stopSpeaking': 'Stop Speaking',
