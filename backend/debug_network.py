@@ -43,7 +43,7 @@ try:
         # Let's try to connect to the one from your error log
         shard_host = "ac-3y3wiwz-shard-00-00.dgo2kvl.mongodb.net"
         if not test_tcp_connection(shard_host, 27017):
-            print("\n⚠️  DIAGNOSIS: Port 27017 is blocked.")
+            print("\n DIAGNOSIS: Port 27017 is blocked.")
             print("This is likely due to your VPN or Firewall blocking non-standard ports.")
             print("Try disconnecting the VPN or using a different network.")
         else:
