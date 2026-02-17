@@ -1,0 +1,20 @@
+# Repository-level ignores
+
+# Python virtual environment
+.venv/
+
+# Environment files (do NOT commit secrets)
+*.env
+backend/.env
+
+# Bytecode
+__pycache__/
+*.pyc
+
+# Flutter / Dart build outputs (kept in agri_schemes/.gitignore too)
+agri_schemes/build/
+.agri_schemes/.dart_tool/
+
+# IDE files
+.vscode/
+.idea/
