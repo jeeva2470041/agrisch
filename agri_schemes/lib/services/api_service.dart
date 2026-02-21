@@ -5,9 +5,9 @@ import '../models/farmer_input_model.dart';
 import '../models/scheme_model.dart';
 
 class ApiService {
-  // For physical device testing, use your computer's local IP address.
-  // Identified IP: 10.57.27.73
-  static String _baseUrlPhysical = 'http://10.57.27.73:5000';
+  // For physical device via ADB reverse: localhost tunnels through USB.
+  // For Wi-Fi testing, call updateBaseUrl() with your PC's LAN IP.
+  static String _baseUrlPhysical = 'http://localhost:5000';
   static const String _baseUrlWeb = 'http://localhost:5000';
 
   String get baseUrl {

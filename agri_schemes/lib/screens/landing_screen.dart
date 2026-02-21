@@ -5,7 +5,7 @@ import '../services/language_service.dart';
 import '../services/tts_service.dart';
 import '../services/stt_service.dart';
 import '../services/api_service.dart';
-import 'dashboard_screen.dart';
+import 'farmer_input_screen.dart';
 
 /// Landing Screen
 /// First screen shown to the user with AgriTrust branding
@@ -264,7 +264,7 @@ class _LandingScreenState extends State<LandingScreen> {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => const DashboardScreen(),
+                          builder: (context) => const FarmerInputScreen(),
                         ),
                       );
                     },
