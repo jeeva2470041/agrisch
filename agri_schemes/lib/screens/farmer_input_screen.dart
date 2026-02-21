@@ -7,6 +7,7 @@ import '../data/constants.dart';
 import '../models/farmer_input_model.dart';
 import '../services/stt_service.dart';
 import 'scheme_recommendation_screen.dart';
+import 'dashboard_screen.dart';
 
 /// Farmer Input Screen — Premium UI with searchable state picker
 /// Collects: Crop type, Land size, Season, State/UT
@@ -90,6 +91,39 @@ class _FarmerInputScreenState extends State<FarmerInputScreen>
         ),
       );
     }
+  }
+
+  Widget _buildAppBarIcon({
+    required IconData icon,
+    required String label,
+    required VoidCallback onTap,
+  }) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+        decoration: BoxDecoration(
+          color: Colors.white.withValues(alpha: 0.15),
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(color: Colors.white30),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(icon, color: Colors.white, size: 18),
+            const SizedBox(width: 4),
+            Text(
+              label,
+              style: const TextStyle(
+                color: Colors.white,
+                fontSize: 11,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 
   void _showSnackbar(String message, {bool isError = false}) {
@@ -231,6 +265,34 @@ class _FarmerInputScreenState extends State<FarmerInputScreen>
                   pinned: true,
                   backgroundColor: Colors.transparent,
                   elevation: 0,
+                  actions: [
+                    _buildAppBarIcon(
+                      icon: Icons.wb_sunny_outlined,
+                      label: 'Weather',
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => const DashboardScreen(initialTab: 0),
+                          ),
+                        );
+                      },
+                    ),
+                    const SizedBox(width: 6),
+                    _buildAppBarIcon(
+                      icon: Icons.currency_rupee_outlined,
+                      label: 'Prices',
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => const DashboardScreen(initialTab: 1),
+                          ),
+                        );
+                      },
+                    ),
+                    const SizedBox(width: 12),
+                  ],
                   flexibleSpace: FlexibleSpaceBar(
                     centerTitle: true,
                     title: Text(

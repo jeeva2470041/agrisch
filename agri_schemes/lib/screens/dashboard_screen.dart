@@ -8,7 +8,8 @@ import 'farmer_input_screen.dart';
 /// Dashboard Screen — The new home screen after landing.
 /// Shows Weather, Market Prices and a CTA to Find Schemes.
 class DashboardScreen extends StatefulWidget {
-  const DashboardScreen({super.key});
+  final int initialTab;
+  const DashboardScreen({super.key, this.initialTab = 0});
 
   @override
   State<DashboardScreen> createState() => _DashboardScreenState();
@@ -16,6 +17,7 @@ class DashboardScreen extends StatefulWidget {
 
 class _DashboardScreenState extends State<DashboardScreen>
     with TickerProviderStateMixin {
+  late TabController _tabCtrl;
   final _api = ApiService();
 
   // Location
@@ -41,6 +43,7 @@ class _DashboardScreenState extends State<DashboardScreen>
   @override
   void initState() {
     super.initState();
+    _tabCtrl = TabController(length: 2, vsync: this, initialIndex: widget.initialTab);
     _fadeCtrl = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 800),
@@ -52,6 +55,7 @@ class _DashboardScreenState extends State<DashboardScreen>
 
   @override
   void dispose() {
+    _tabCtrl.dispose();
     _fadeCtrl.dispose();
     super.dispose();
   }
@@ -120,100 +124,96 @@ class _DashboardScreenState extends State<DashboardScreen>
 
     return Scaffold(
       backgroundColor: _darkBg,
+      appBar: AppBar(
+        backgroundColor: _primaryGreen,
+        title: const Text(
+          'AgriTrust',
+          style: TextStyle(
+            fontWeight: FontWeight.bold,
+            fontSize: 20,
+            letterSpacing: 0.5,
+            color: Colors.white,
+          ),
+        ),
+        iconTheme: const IconThemeData(color: Colors.white),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.refresh_rounded),
+            onPressed: () {
+              setState(() {
+                _loadingWeather = true;
+                _loadingMarket = true;
+              });
+              _fetchWeather();
+              _fetchMarket();
+            },
+          ),
+        ],
+        bottom: TabBar(
+          controller: _tabCtrl,
+          indicatorColor: Colors.white,
+          indicatorWeight: 3,
+          labelColor: Colors.white,
+          unselectedLabelColor: Colors.white54,
+          tabs: [
+            Tab(icon: const Icon(Icons.cloud_outlined), text: l.weather),
+            Tab(icon: const Icon(Icons.storefront_outlined), text: l.marketPrices),
+          ],
+        ),
+      ),
       body: FadeTransition(
         opacity: _fadeAnim,
-        child: RefreshIndicator(
-          color: _accentGreen,
-          onRefresh: () async {
-            setState(() {
-              _loadingWeather = true;
-              _loadingMarket = true;
-            });
-            await Future.wait([_fetchWeather(), _fetchMarket()]);
-          },
-          child: CustomScrollView(
-            physics: const AlwaysScrollableScrollPhysics(),
-            slivers: [
-              // ── App Bar ──
-              SliverAppBar(
-                expandedHeight: 100,
-                floating: false,
-                pinned: true,
-                backgroundColor: _primaryGreen,
-                flexibleSpace: FlexibleSpaceBar(
-                  title: const Text(
-                    'AgriTrust',
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 20,
-                      letterSpacing: 0.5,
-                    ),
-                  ),
-                  background: Container(
-                    decoration: const BoxDecoration(
-                      gradient: LinearGradient(
-                        colors: [Color(0xFF1B5E20), Color(0xFF2E7D32)],
-                      ),
-                    ),
-                  ),
-                ),
-                actions: [
-                  IconButton(
-                    icon: const Icon(Icons.refresh_rounded),
-                    onPressed: () {
-                      setState(() {
-                        _loadingWeather = true;
-                        _loadingMarket = true;
-                      });
-                      _fetchWeather();
-                      _fetchMarket();
-                    },
-                  ),
+        child: TabBarView(
+          controller: _tabCtrl,
+          children: [
+            // ── Weather Tab ──
+            RefreshIndicator(
+              color: _accentGreen,
+              onRefresh: () async {
+                setState(() => _loadingWeather = true);
+                await _fetchWeather();
+              },
+              child: ListView(
+                physics: const AlwaysScrollableScrollPhysics(),
+                padding: const EdgeInsets.fromLTRB(16, 16, 16, 32),
+                children: [
+                  _buildLocationBar(),
+                  const SizedBox(height: 20),
+                  _buildSectionTitle('🌤️', l.weather),
+                  const SizedBox(height: 10),
+                  _buildWeatherCard(),
+                  const SizedBox(height: 24),
+                  if (_weather != null &&
+                      _weather!['daily'] != null &&
+                      (_weather!['daily'] as List).isNotEmpty) ...[
+                    _buildSectionTitle('📅', l.forecast),
+                    const SizedBox(height: 10),
+                    _buildForecastRow(),
+                  ],
                 ],
               ),
+            ),
 
-              // ── Content ──
-              SliverToBoxAdapter(
-                child: Padding(
-                  padding: const EdgeInsets.fromLTRB(16, 16, 16, 32),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      // Location bar
-                      _buildLocationBar(),
-                      const SizedBox(height: 20),
-
-                      // Weather Card
-                      _buildSectionTitle('🌤️', l.weather),
-                      const SizedBox(height: 10),
-                      _buildWeatherCard(),
-                      const SizedBox(height: 24),
-
-                      // 5-Day Forecast
-                      if (_weather != null &&
-                          _weather!['daily'] != null &&
-                          (_weather!['daily'] as List).isNotEmpty) ...[
-                        _buildSectionTitle('📅', l.forecast),
-                        const SizedBox(height: 10),
-                        _buildForecastRow(),
-                        const SizedBox(height: 24),
-                      ],
-
-                      // Market Prices
-                      _buildSectionTitle('📈', l.marketPrices),
-                      const SizedBox(height: 10),
-                      _buildMarketPrices(),
-                      const SizedBox(height: 32),
-
-                      // Find Schemes CTA
-                      _buildFindSchemesCTA(l),
-                      const SizedBox(height: 16),
-                    ],
-                  ),
-                ),
+            // ── Market Prices Tab ──
+            RefreshIndicator(
+              color: _accentGreen,
+              onRefresh: () async {
+                setState(() => _loadingMarket = true);
+                await _fetchMarket();
+              },
+              child: ListView(
+                physics: const AlwaysScrollableScrollPhysics(),
+                padding: const EdgeInsets.fromLTRB(16, 16, 16, 32),
+                children: [
+                  _buildLocationBar(),
+                  const SizedBox(height: 20),
+                  _buildSectionTitle('📈', l.marketPrices),
+                  const SizedBox(height: 10),
+                  _buildMarketPrices(),
+                ],
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );
@@ -399,7 +399,7 @@ class _DashboardScreenState extends State<DashboardScreen>
   Widget _buildForecastRow() {
     final days = (_weather?['daily'] as List?) ?? [];
     return SizedBox(
-      height: 120,
+      height: 150,
       child: ListView.separated(
         scrollDirection: Axis.horizontal,
         itemCount: days.length,
