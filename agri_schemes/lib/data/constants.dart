@@ -17,6 +17,7 @@ class CropTypes {
   static const String millets = 'Millets';
   static const String oilseeds = 'Oilseeds';
   static const String tobacco = 'Tobacco';
+  static const String paddy = 'Paddy';
 }
 
 class Seasons {

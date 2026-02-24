@@ -273,7 +273,8 @@ class _FarmerInputScreenState extends State<FarmerInputScreen>
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (_) => const DashboardScreen(initialTab: 0),
+                            builder: (_) =>
+                                const DashboardScreen(initialTab: 0),
                           ),
                         );
                       },
@@ -286,7 +287,8 @@ class _FarmerInputScreenState extends State<FarmerInputScreen>
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (_) => const DashboardScreen(initialTab: 1),
+                            builder: (_) =>
+                                const DashboardScreen(initialTab: 1),
                           ),
                         );
                       },
@@ -922,6 +924,9 @@ class _FarmerInputScreenState extends State<FarmerInputScreen>
       'Oilseeds': '🌻',
       'Jute': '🧵',
       'Tobacco': '🍂',
+      'Paddy': '🌾',
+      'Fisheries': '🐟',
+      'Livestock': '🐄',
     };
     return map[crop] ?? '🌱';
   }
@@ -946,6 +951,7 @@ class _FarmerInputScreenState extends State<FarmerInputScreen>
       CropTypes.oilseeds: l.oilseeds,
       CropTypes.jute: l.jute,
       CropTypes.tobacco: l.tobacco,
+      CropTypes.paddy: 'Paddy',
     };
     return map[cropValue] ?? cropValue;
   }
@@ -976,8 +982,10 @@ class _CropPickerSheetState extends State<_CropPickerSheet> {
 
   // All crops with their keys, values, and emoji icons
   static const _crops = [
+    // Most popular crops first
     ('Rice', 'rice', '🌾'),
     ('Wheat', 'wheat', '🌾'),
+    ('Paddy', 'paddy', '🌾'),
     ('Cotton', 'cotton', '🏵️'),
     ('Sugarcane', 'sugarcane', '🎋'),
     ('Maize', 'maize', '🌽'),
@@ -985,13 +993,13 @@ class _CropPickerSheetState extends State<_CropPickerSheet> {
     ('Millets', 'millets', '🌾'),
     ('Groundnut', 'groundnut', '🥜'),
     ('Soybean', 'soybean', '🫘'),
+    ('Oilseeds', 'oilseeds', '🌻'),
     ('Coconut', 'coconut', '🥥'),
     ('Vegetables', 'vegetables', '🥬'),
     ('Fruits', 'fruits', '🍎'),
+    ('Spices', 'spices', '🌶️'),
     ('Tea', 'tea', '🍵'),
     ('Coffee', 'coffee', '☕'),
-    ('Spices', 'spices', '🌶️'),
-    ('Oilseeds', 'oilseeds', '🌻'),
     ('Jute', 'jute', '🧵'),
     ('Tobacco', 'tobacco', '🍂'),
   ];

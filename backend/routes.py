@@ -105,8 +105,8 @@ def get_eligible_schemes():
 
         # --- Build MongoDB query ---
         query = {
-            "states": {"$in": [state, "All"]},
-            "crops": {"$in": [crop, "All"]},
+            "states": {"$in": [state, "All", "All India"]},
+            "crops": {"$in": [crop, "All", "All Crops"]},
             "min_land": {"$lte": land_size},
             "max_land": {"$gte": land_size},
         }

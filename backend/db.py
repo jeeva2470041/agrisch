@@ -61,4 +61,4 @@ def init_indexes():
     schemes.create_index([("type", ASCENDING)])
     schemes.create_index([("benefit_amount", -1)])
 
-    print("✅ MongoDB indexes initialized.")
+    print("[OK] MongoDB indexes initialized.")
