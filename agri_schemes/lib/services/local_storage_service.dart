@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'dart:convert';
 import '../models/scheme_model.dart';
@@ -27,7 +28,7 @@ class LocalStorageService {
       final List<dynamic> jsonList = json.decode(jsonString);
       return jsonList.map((e) => SchemeModel.fromJson(e)).toList();
     } catch (e) {
-      print("Error decoding cached schemes: $e");
+      debugPrint("Error decoding cached schemes: $e");
       return [];
     }
   }
