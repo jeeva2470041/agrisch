@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import '../l10n/app_localizations.dart';
 import '../models/farmer_input_model.dart';
 import '../models/scheme_model.dart';
+import 'ask_ai_screen.dart';
 import 'scheme_detail_screen.dart';
 import '../services/scheme_matching_service.dart';
 import '../services/tts_service.dart';
@@ -389,6 +390,23 @@ class _SchemeRecommendationScreenState
                     ),
                     icon: const Icon(Icons.info_outline, color: Color(0xFF2E7D32)),
                     label: Text(localizations.howToApply, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600)),
+                  ),
+                  const SizedBox(height: 8),
+                  OutlinedButton.icon(
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (_) => AskAiScreen(scheme: scheme)),
+                      );
+                    },
+                    style: OutlinedButton.styleFrom(
+                      foregroundColor: Colors.deepPurple,
+                      padding: const EdgeInsets.symmetric(vertical: 12),
+                      side: const BorderSide(color: Colors.deepPurple),
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                    ),
+                    icon: const Icon(Icons.auto_awesome, color: Colors.deepPurple),
+                    label: Text(localizations.askAi, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600)),
                   ),
                 ],
               ),

@@ -25,3 +25,26 @@ The backend uses environment variables. Do NOT commit secrets.
 - `backend/.env` is ignored by git (added to repository `.gitignore`).
 - If you accidentally committed credentials, rotate them immediately and remove the file from history.
 
+# 1. Navigate to backend folder
+cd backend
+
+# 2. Create a virtual environment
+python -m venv venv
+
+# 3. Activate virtual environment
+# Windows:
+venv\Scripts\activate
+# macOS/Linux:
+# source venv/bin/activate
+
+# 4. Install dependencies
+pip install -r requirements.txt
+
+# 5. Set up your .env file (see above)
+
+# 6. Seed the database with scheme data
+python seed_db.py
+
+# 7. Run the Flask server
+python app.py
+

@@ -192,6 +192,15 @@ class AppLocalizations {
   String get pkvyVoice => translate('pkvyVoice');
   String get rkvyVoice => translate('rkvyVoice');
   String get microIrrigationVoice => translate('microIrrigationVoice');
+
+  // ========== Ask AI ==========
+  String get askAi => translate('askAi');
+  String get askAiHint => translate('askAiHint');
+  String get askAiWelcome => translate('askAiWelcome');
+  String get askAiPrompt => translate('askAiPrompt');
+  String get askAiSuggestion1 => translate('askAiSuggestion1');
+  String get askAiSuggestion2 => translate('askAiSuggestion2');
+  String get askAiSuggestion3 => translate('askAiSuggestion3');
 }
 
 /// Private delegate class for localization
