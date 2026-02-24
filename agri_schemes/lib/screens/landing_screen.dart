@@ -161,7 +161,7 @@ class _LandingScreenState extends State<LandingScreen> {
                     Container(
                       padding: const EdgeInsets.symmetric(horizontal: 12),
                       decoration: BoxDecoration(
-                        color: Colors.white.withOpacity(0.2),
+                        color: Colors.white.withValues(alpha: 0.2),
                         borderRadius: BorderRadius.circular(20),
                       ),
                       child: DropdownButtonHideUnderline(
@@ -181,6 +181,7 @@ class _LandingScreenState extends State<LandingScreen> {
                               await ttsService.setLanguage(
                                 languageService.ttsLanguageCode,
                               );
+                              if (!context.mounted) return;
                               Provider.of<SttService>(
                                 context,
                                 listen: false,
@@ -215,10 +216,10 @@ class _LandingScreenState extends State<LandingScreen> {
                   Container(
                     padding: const EdgeInsets.all(24),
                     decoration: BoxDecoration(
-                      color: Colors.white.withOpacity(0.15),
+                      color: Colors.white.withValues(alpha: 0.15),
                       shape: BoxShape.circle,
                       border: Border.all(
-                        color: Colors.white.withOpacity(0.25),
+                        color: Colors.white.withValues(alpha: 0.25),
                         width: 2,
                       ),
                     ),

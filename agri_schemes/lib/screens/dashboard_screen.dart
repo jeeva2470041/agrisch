@@ -43,7 +43,11 @@ class _DashboardScreenState extends State<DashboardScreen>
   @override
   void initState() {
     super.initState();
-    _tabCtrl = TabController(length: 2, vsync: this, initialIndex: widget.initialTab);
+    _tabCtrl = TabController(
+      length: 2,
+      vsync: this,
+      initialIndex: widget.initialTab,
+    );
     _fadeCtrl = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 800),
@@ -102,20 +106,22 @@ class _DashboardScreenState extends State<DashboardScreen>
   Future<void> _fetchWeather() async {
     if (_lat == null || _lon == null) return;
     final data = await _api.getWeather(_lat!, _lon!);
-    if (mounted)
+    if (mounted) {
       setState(() {
         _weather = data;
         _loadingWeather = false;
       });
+    }
   }
 
   Future<void> _fetchMarket() async {
     final data = await _api.getMarketPrices(_stateName);
-    if (mounted)
+    if (mounted) {
       setState(() {
         _market = data;
         _loadingMarket = false;
       });
+    }
   }
 
   @override
@@ -157,7 +163,10 @@ class _DashboardScreenState extends State<DashboardScreen>
           unselectedLabelColor: Colors.white54,
           tabs: [
             Tab(icon: const Icon(Icons.cloud_outlined), text: l.weather),
-            Tab(icon: const Icon(Icons.storefront_outlined), text: l.marketPrices),
+            Tab(
+              icon: const Icon(Icons.storefront_outlined),
+              text: l.marketPrices,
+            ),
           ],
         ),
       ),
@@ -190,6 +199,8 @@ class _DashboardScreenState extends State<DashboardScreen>
                     const SizedBox(height: 10),
                     _buildForecastRow(),
                   ],
+                  const SizedBox(height: 32),
+                  _buildFindSchemesCTA(l),
                 ],
               ),
             ),

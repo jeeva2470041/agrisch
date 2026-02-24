@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import '../models/scheme_model.dart';
 import '../models/farmer_input_model.dart';
 import 'api_service.dart';
@@ -23,7 +24,7 @@ class SchemeMatchingService {
 
       return schemes;
     } catch (e) {
-      print("API request failed: $e. Loading from cache.");
+      debugPrint("API request failed: $e. Loading from cache.");
       // Fallback to cache
       return await _localStorageService.getCachedSchemes();
     }
