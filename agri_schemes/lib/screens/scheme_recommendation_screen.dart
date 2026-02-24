@@ -24,7 +24,8 @@ class _SchemeRecommendationScreenState
   final _schemeService = SchemeMatchingService();
   late Future<List<SchemeModel>> _eligibleSchemesFuture;
   String? _speakingSchemeId;
-  String _selectedFilter = 'All';
+  String _selectedFilter = 'filterAll';
+  TtsService? _ttsService;
 
   // ── Type-based theming ───────────────────────────────────────
   // Type themes use localization keys for labels
@@ -161,9 +162,14 @@ class _SchemeRecommendationScreenState
   }
 
   @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _ttsService = Provider.of<TtsService>(context, listen: false);
+  }
+
+  @override
   void dispose() {
-    final ttsService = Provider.of<TtsService>(context, listen: false);
-    ttsService.stop();
+    _ttsService?.stop();
     super.dispose();
   }
 
