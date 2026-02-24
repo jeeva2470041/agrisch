@@ -7,3 +7,4 @@ requests==2.31.0
 beautifulsoup4==4.12.2
 pdfplumber==0.10.3
 gunicorn==21.2.0
+certifi==2024.2.2

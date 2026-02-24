@@ -1,20 +1,46 @@
-# Repository-level ignores
+# ─── Repository-level .gitignore ───
 
-# Python virtual environment
-.venv/
+# ─── OS files ───
+.DS_Store
+Thumbs.db
+Desktop.ini
+*.swp
+*.swo
+*~
 
-# Environment files (do NOT commit secrets)
-*.env
-backend/.env
-
-# Bytecode
-__pycache__/
-*.pyc
-
-# Flutter / Dart build outputs (kept in agri_schemes/.gitignore too)
-agri_schemes/build/
-.agri_schemes/.dart_tool/
-
-# IDE files
+# ─── IDE / Editor ───
 .vscode/
 .idea/
+*.iml
+*.suo
+*.user
+*.code-workspace
+
+# ─── Python (backend) ───
+backend/venv/
+backend/.venv/
+**/__pycache__/
+*.py[cod]
+*.pyo
+*.egg-info/
+*.egg
+dist/
+*.whl
+
+# ─── Environment / Secrets (NEVER commit) ───
+.env
+.env.local
+.env.production
+.env.*.local
+backend/.env
+
+# ─── Test output ───
+backend/test_output.txt
+backend/test_results.txt
+
+# ─── Flutter / Dart build outputs ───
+agri_schemes/build/
+agri_schemes/.dart_tool/
+agri_schemes/.flutter-plugins-dependencies
+agri_schemes/.packages
+*.g.dart
