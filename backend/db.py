@@ -2,6 +2,7 @@
 AgriScheme Backend — MongoDB connection and index management.
 Uses a singleton MongoClient with connection pooling.
 """
+import certifi
 from pymongo import MongoClient, ASCENDING
 from config import MONGO_URI, DB_NAME
 
@@ -15,14 +16,17 @@ def _get_client():
     """Return a singleton MongoClient instance."""
     global _client
     if _client is None:
-        _client = MongoClient(
-            MONGO_URI,
+        kwargs = dict(
             maxPoolSize=50,
             retryWrites=True,
-            serverSelectionTimeoutMS=60000, 
+            serverSelectionTimeoutMS=60000,
             connectTimeoutMS=60000,
             socketTimeoutMS=60000,
         )
+        # Only use certifi CA bundle for Atlas (SRV) connections
+        if MONGO_URI.startswith("mongodb+srv"):
+            kwargs["tlsCAFile"] = certifi.where()
+        _client = MongoClient(MONGO_URI, **kwargs)
     return _client
 
 

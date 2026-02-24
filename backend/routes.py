@@ -8,6 +8,7 @@ from db import get_schemes_collection
 from config import DEFAULT_PAGE_SIZE, MAX_PAGE_SIZE
 from weather_service import get_weather
 from market_service import get_market_prices
+from ai_service import ask_ai
 
 api_bp = Blueprint("api", __name__)
 
@@ -302,6 +303,47 @@ def market_prices():
             return jsonify({"error": "state parameter too long"}), 400
 
         result = get_market_prices(state, crop)
+        return jsonify({"success": True, **result})
+
+    except Exception as exc:
+        return jsonify({"error": f"Internal server error: {exc}"}), 500
+
+
+# ---------------------------------------------------------------------------
+# POST /api/ask-ai  —  AI-powered scheme Q&A
+# ---------------------------------------------------------------------------
+@api_bp.route("/ask-ai", methods=["POST"])
+def ask_ai_endpoint():
+    """Answer a farmer's question about a specific scheme using AI.
+
+    Expects JSON body:
+        question       (str, required) — the farmer's question
+        scheme_context (str, required) — stringified scheme info for context
+        language       (str, optional) — locale code (en/hi/ta/ml), default en
+    """
+    try:
+        data = request.get_json(silent=True)
+        if not data or not isinstance(data, dict):
+            return jsonify({"error": "Request body must be a JSON object"}), 400
+
+        question = (data.get("question") or "").strip()
+        scheme_context = (data.get("scheme_context") or "").strip()
+        language = (data.get("language") or "en").strip()
+
+        if not question:
+            return jsonify({"error": "question is required"}), 400
+        if len(question) > 500:
+            return jsonify({"error": "question is too long (max 500 chars)"}), 400
+        if not scheme_context:
+            return jsonify({"error": "scheme_context is required"}), 400
+        if len(scheme_context) > 5000:
+            return jsonify({"error": "scheme_context is too long"}), 400
+
+        result = ask_ai(question, scheme_context, language)
+
+        if "error" in result:
+            return jsonify({"success": False, **result}), 502
+
         return jsonify({"success": True, **result})
 
     except Exception as exc:

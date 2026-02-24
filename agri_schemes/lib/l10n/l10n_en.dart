@@ -179,6 +179,15 @@ const Map<String, String> englishTranslations = {
   'microIrrigationVoice':
       'The Micro Irrigation Scheme provides subsidy for installing drip and sprinkler irrigation systems. You can get up to 55 percent subsidy on the cost. These systems save 30 to 50 percent water compared to traditional flooding methods and increase crop yield by 20 to 30 percent.',
 
+  // Ask AI
+  'askAi': 'Ask AI',
+  'askAiHint': 'Ask a question about this scheme...',
+  'askAiWelcome': 'Hi! I can answer your questions about',
+  'askAiPrompt': 'Ask me anything — eligibility, benefits, how to apply, documents needed, etc.',
+  'askAiSuggestion1': 'Am I eligible for this scheme?',
+  'askAiSuggestion2': 'How do I apply?',
+  'askAiSuggestion3': 'What documents do I need?',
+
   // Dashboard
   'weather': 'Weather',
   'forecast': '5-Day Forecast',
