@@ -94,4 +94,38 @@ class ApiService {
       return null;
     }
   }
+
+  // ─────────────────────────────────────────────────
+  // Ask AI API
+  // ─────────────────────────────────────────────────
+  Future<String> askAi({
+    required String question,
+    required String schemeContext,
+    String language = 'en',
+  }) async {
+    try {
+      final response = await http
+          .post(
+            Uri.parse('$baseUrl/api/ask-ai'),
+            headers: {'Content-Type': 'application/json'},
+            body: json.encode({
+              'question': question,
+              'scheme_context': schemeContext,
+              'language': language,
+            }),
+          )
+          .timeout(const Duration(seconds: 30));
+
+      final body = json.decode(response.body) as Map<String, dynamic>;
+
+      if (response.statusCode == 200 && body['success'] == true) {
+        return body['answer'] as String;
+      } else {
+        return body['error'] as String? ?? 'Failed to get AI response';
+      }
+    } catch (e) {
+      debugPrint('Ask AI error: $e');
+      return 'Could not connect to AI service. Please try again.';
+    }
+  }
 }
