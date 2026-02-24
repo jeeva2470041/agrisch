@@ -162,6 +162,22 @@ class AppLocalizations {
   String get backToInput => translate('backToInput');
   String get perYear => translate('perYear');
   String get perHectare => translate('perHectare');
+  String get viewDetails => translate('viewDetails');
+  String get schemesCount => translate('schemesCount');
+  String get foundForCropState => translate('foundForCropState');
+  String get filterAll => translate('filterAll');
+  String get filterLoan => translate('filterLoan');
+  String get filterInsurance => translate('filterInsurance');
+  String get filterSubsidy => translate('filterSubsidy');
+  String get filterIncomeSupport => translate('filterIncomeSupport');
+  String get filterService => translate('filterService');
+  String get filterMarketing => translate('filterMarketing');
+  String get filterIrrigation => translate('filterIrrigation');
+  String get filterDigital => translate('filterDigital');
+  String get filterCompensation => translate('filterCompensation');
+  String get filterMSP => translate('filterMSP');
+  String get filterPriceSupport => translate('filterPriceSupport');
+  String get maxLand => translate('maxLand');
 
   // ========== Scheme Names ==========
   String get pmKisan => translate('pmKisan');

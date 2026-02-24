@@ -1,0 +1,422 @@
+[
+    {
+        "scheme_name": "Pradhan Mantri Kisan Samman Nidhi (PM-KISAN)",
+        "type": "Direct Income Support",
+        "benefit": "\u20b96,000 per year (\u20b92,000 \u00d7 3 installments)",
+        "benefit_amount": 6000,
+        "states": [
+            "All India"
+        ],
+        "crops": [
+            "All Crops"
+        ],
+        "min_land": 0,
+        "max_land": null,
+        "season": "All",
+        "documents_required": [
+            "Aadhaar Card",
+            "Land Records",
+            "Bank Account Details"
+        ],
+        "official_link": "https://pmkisan.gov.in"
+    },
+    {
+        "scheme_name": "Pradhan Mantri Fasal Bima Yojana (PMFBY)",
+        "type": "Crop Insurance",
+        "benefit": "Insurance at subsidized premium (2% Kharif, 1.5% Rabi)",
+        "benefit_amount": null,
+        "states": [
+            "All India"
+        ],
+        "crops": [
+            "Food Crops",
+            "Oilseeds",
+            "Commercial Crops"
+        ],
+        "min_land": 0,
+        "max_land": null,
+        "season": "Kharif/Rabi",
+        "documents_required": [
+            "Aadhaar",
+            "Land Records",
+            "Bank Details",
+            "Crop Declaration"
+        ],
+        "official_link": "https://pmfby.gov.in"
+    },
+    {
+        "scheme_name": "Restructured Weather Based Crop Insurance Scheme (RWBCIS)",
+        "type": "Weather Index Insurance",
+        "benefit": "Weather-based fast claim settlement",
+        "benefit_amount": null,
+        "states": [
+            "All India"
+        ],
+        "crops": [
+            "All Notified Crops"
+        ],
+        "min_land": 0,
+        "max_land": null,
+        "season": "All",
+        "documents_required": [
+            "Aadhaar",
+            "Land Records",
+            "Bank Details"
+        ],
+        "official_link": "https://pmfby.gov.in"
+    },
+    {
+        "scheme_name": "Modified Interest Subvention Scheme (MISS)",
+        "type": "Interest Subvention",
+        "benefit": "Interest reduced to 4% on prompt repayment",
+        "benefit_amount": 300000,
+        "states": [
+            "All India"
+        ],
+        "crops": [
+            "All Crops"
+        ],
+        "min_land": 0,
+        "max_land": null,
+        "season": "All",
+        "documents_required": [
+            "KCC Card",
+            "Bank Account"
+        ],
+        "official_link": "https://agricoop.nic.in"
+    },
+    {
+        "scheme_name": "Kisan Credit Card (KCC)",
+        "type": "Agricultural Loan",
+        "benefit": "Loan up to \u20b93,00,000",
+        "benefit_amount": 300000,
+        "states": [
+            "All India"
+        ],
+        "crops": [
+            "Agriculture",
+            "Animal Husbandry",
+            "Fisheries"
+        ],
+        "min_land": 0,
+        "max_land": null,
+        "season": "All",
+        "documents_required": [
+            "Aadhaar",
+            "Land Records",
+            "Bank Account"
+        ],
+        "official_link": "https://www.myscheme.gov.in/schemes/kcc"
+    },
+    {
+        "scheme_name": "Agriculture Infrastructure Fund (AIF)",
+        "type": "Infrastructure Loan",
+        "benefit": "3% interest subvention up to \u20b92 crore",
+        "benefit_amount": 20000000,
+        "states": [
+            "All India"
+        ],
+        "crops": [
+            "All"
+        ],
+        "min_land": 0,
+        "max_land": null,
+        "season": "All",
+        "documents_required": [
+            "Project Report",
+            "Aadhaar",
+            "Bank Details"
+        ],
+        "official_link": "https://agriinfra.dac.gov.in"
+    },
+    {
+        "scheme_name": "Pradhan Mantri Matsya Sampada Yojana (PMMSY)",
+        "type": "Fisheries Support",
+        "benefit": "40%-60% subsidy",
+        "benefit_amount": null,
+        "states": [
+            "All India"
+        ],
+        "crops": [
+            "Fisheries"
+        ],
+        "min_land": 0,
+        "max_land": null,
+        "season": "All",
+        "documents_required": [
+            "Aadhaar",
+            "Project Proposal",
+            "Bank Details"
+        ],
+        "official_link": "https://www.myscheme.gov.in/schemes/pmmsy"
+    },
+    {
+        "scheme_name": "Rashtriya Gokul Mission (RGM)",
+        "type": "Animal Husbandry",
+        "benefit": "Breed improvement & dairy infrastructure support",
+        "benefit_amount": null,
+        "states": [
+            "All India"
+        ],
+        "crops": [
+            "Livestock"
+        ],
+        "min_land": 0,
+        "max_land": null,
+        "season": "All",
+        "documents_required": [
+            "Aadhaar",
+            "Livestock Details"
+        ],
+        "official_link": "https://dahd.nic.in"
+    },
+    {
+        "scheme_name": "Digital Agriculture Mission",
+        "type": "Digital Infrastructure",
+        "benefit": "Farmer Digital ID & AgriStack Access",
+        "benefit_amount": null,
+        "states": [
+            "All India"
+        ],
+        "crops": [
+            "All"
+        ],
+        "min_land": 0,
+        "max_land": null,
+        "season": "All",
+        "documents_required": [
+            "Aadhaar",
+            "Land Records"
+        ],
+        "official_link": "https://agriwelfare.gov.in"
+    },
+    {
+        "scheme_name": "Price Support Scheme (PSS)",
+        "type": "MSP Procurement",
+        "benefit": "Government procurement at MSP",
+        "benefit_amount": null,
+        "states": [
+            "All India"
+        ],
+        "crops": [
+            "Pulses",
+            "Oilseeds",
+            "Copra"
+        ],
+        "min_land": 0,
+        "max_land": null,
+        "season": "Kharif/Rabi",
+        "documents_required": [
+            "Aadhaar",
+            "Land Records"
+        ],
+        "official_link": "https://www.myscheme.gov.in/schemes/pss"
+    },
+    {
+        "scheme_name": "Price Deficiency Payment Scheme (PDPS)",
+        "type": "Price Compensation",
+        "benefit": "Difference between MSP & market price",
+        "benefit_amount": null,
+        "states": [
+            "Participating States"
+        ],
+        "crops": [
+            "Oilseeds",
+            "Pulses"
+        ],
+        "min_land": 0,
+        "max_land": null,
+        "season": "All",
+        "documents_required": [
+            "Aadhaar",
+            "Market Sale Receipt"
+        ],
+        "official_link": "https://agricoop.nic.in"
+    },
+    {
+        "scheme_name": "Annadatha Sukhibhav Scheme",
+        "type": "Income Support",
+        "benefit": "\u20b920,000 per year",
+        "benefit_amount": 20000,
+        "states": [
+            "Andhra Pradesh"
+        ],
+        "crops": [
+            "All Crops"
+        ],
+        "min_land": 0,
+        "max_land": null,
+        "season": "All",
+        "documents_required": [
+            "Aadhaar",
+            "Land Records",
+            "Bank Details"
+        ],
+        "official_link": "https://apagriculture.gov.in"
+    },
+    {
+        "scheme_name": "Rythu Bharosa",
+        "type": "Investment Support",
+        "benefit": "\u20b912,000 per acre per year",
+        "benefit_amount": 12000,
+        "states": [
+            "Telangana"
+        ],
+        "crops": [
+            "All Crops"
+        ],
+        "min_land": 0,
+        "max_land": null,
+        "season": "Kharif/Rabi",
+        "documents_required": [
+            "Aadhaar",
+            "Land Ownership Certificate"
+        ],
+        "official_link": "https://agriculture.telangana.gov.in"
+    },
+    {
+        "scheme_name": "KALIA Scheme",
+        "type": "Income & Livelihood Support",
+        "benefit": "\u20b925,000 over 5 seasons",
+        "benefit_amount": 25000,
+        "states": [
+            "Odisha"
+        ],
+        "crops": [
+            "All Crops"
+        ],
+        "min_land": 0,
+        "max_land": null,
+        "season": "All",
+        "documents_required": [
+            "Aadhaar",
+            "SECC Data",
+            "Bank Details"
+        ],
+        "official_link": "https://kalia.odisha.gov.in"
+    },
+    {
+        "scheme_name": "Mukhya Mantri Kisan Sahay Yojana",
+        "type": "Crop Compensation",
+        "benefit": "\u20b920,000\u2013\u20b925,000 per hectare",
+        "benefit_amount": 25000,
+        "states": [
+            "Gujarat"
+        ],
+        "crops": [
+            "All Crops"
+        ],
+        "min_land": 0,
+        "max_land": 4,
+        "season": "Kharif/Rabi",
+        "documents_required": [
+            "Aadhaar",
+            "Land Records"
+        ],
+        "official_link": "https://ikhedut.gujarat.gov.in"
+    },
+    {
+        "scheme_name": "Mukhyamantri Bhavantar Bhugtan Yojana",
+        "type": "Price Deficit",
+        "benefit": "MSP\u2013Market price difference paid",
+        "benefit_amount": null,
+        "states": [
+            "Madhya Pradesh"
+        ],
+        "crops": [
+            "Soybean",
+            "Maize",
+            "Wheat"
+        ],
+        "min_land": 0,
+        "max_land": null,
+        "season": "Kharif/Rabi",
+        "documents_required": [
+            "Aadhaar",
+            "Market Receipt"
+        ],
+        "official_link": "https://mpkrishi.mp.gov.in"
+    },
+    {
+        "scheme_name": "Mukhya Mantri Krishi Ashirwad Yojana",
+        "type": "Income Support",
+        "benefit": "\u20b95,000 per acre (max 5 acres)",
+        "benefit_amount": 25000,
+        "states": [
+            "Jharkhand"
+        ],
+        "crops": [
+            "All Crops"
+        ],
+        "min_land": 0,
+        "max_land": 5,
+        "season": "All",
+        "documents_required": [
+            "Aadhaar",
+            "Land Records"
+        ],
+        "official_link": "https://agri.jharkhand.gov.in"
+    },
+    {
+        "scheme_name": "Banglar Shasya Bima",
+        "type": "Crop Insurance",
+        "benefit": "100% premium paid by state",
+        "benefit_amount": null,
+        "states": [
+            "West Bengal"
+        ],
+        "crops": [
+            "Paddy",
+            "Wheat"
+        ],
+        "min_land": 0,
+        "max_land": null,
+        "season": "Kharif/Rabi",
+        "documents_required": [
+            "Aadhaar",
+            "Land Records"
+        ],
+        "official_link": "https://banglashasyabima.net"
+    },
+    {
+        "scheme_name": "Krishi Bhagya Scheme",
+        "type": "Irrigation Subsidy",
+        "benefit": "Up to \u20b91,00,000 subsidy",
+        "benefit_amount": 100000,
+        "states": [
+            "Karnataka"
+        ],
+        "crops": [
+            "All Crops"
+        ],
+        "min_land": 0,
+        "max_land": null,
+        "season": "All",
+        "documents_required": [
+            "Aadhaar",
+            "Land Ownership Proof"
+        ],
+        "official_link": "https://raitamitra.karnataka.gov.in"
+    },
+    {
+        "scheme_name": "Kerala Coconut Palm Insurance Scheme",
+        "type": "Insurance",
+        "benefit": "\u20b9900 per palm coverage",
+        "benefit_amount": 900,
+        "states": [
+            "Kerala"
+        ],
+        "crops": [
+            "Coconut"
+        ],
+        "min_land": 0,
+        "max_land": 100,
+        "season": "All",
+        "documents_required": [
+            "Aadhaar",
+            "Land Records",
+            "Palm Count Certificate"
+        ],
+        "official_link": "https://keralaagriculture.gov.in"
+    }
+]
