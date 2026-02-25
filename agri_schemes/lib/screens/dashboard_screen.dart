@@ -4,6 +4,9 @@ import 'package:geocoding/geocoding.dart';
 import '../services/api_service.dart';
 import '../l10n/app_localizations.dart';
 import 'farmer_input_screen.dart';
+import 'disease_detection_screen.dart';
+import 'yield_prediction_screen.dart';
+import 'price_forecast_screen.dart';
 
 /// Dashboard Screen — The new home screen after landing.
 /// Shows Weather, Market Prices and a CTA to Find Schemes.
@@ -44,7 +47,7 @@ class _DashboardScreenState extends State<DashboardScreen>
   void initState() {
     super.initState();
     _tabCtrl = TabController(
-      length: 2,
+      length: 3,
       vsync: this,
       initialIndex: widget.initialTab,
     );
@@ -167,6 +170,10 @@ class _DashboardScreenState extends State<DashboardScreen>
               icon: const Icon(Icons.storefront_outlined),
               text: l.marketPrices,
             ),
+            Tab(
+              icon: const Icon(Icons.auto_awesome_outlined),
+              text: l.translate('aiTools'),
+            ),
           ],
         ),
       ),
@@ -223,6 +230,49 @@ class _DashboardScreenState extends State<DashboardScreen>
                   _buildMarketPrices(),
                 ],
               ),
+            ),
+
+            // ── AI Tools Tab ──
+            ListView(
+              padding: const EdgeInsets.fromLTRB(16, 16, 16, 32),
+              children: [
+                _buildSectionTitle('🤖', l.translate('aiTools')),
+                const SizedBox(height: 16),
+                _buildToolCard(
+                  icon: Icons.local_florist_rounded,
+                  title: l.translate('diseaseDetection'),
+                  subtitle: l.translate('diseaseDetectionDesc'),
+                  color: Colors.red.shade400,
+                  onTap: () => Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (_) => const DiseaseDetectionScreen()),
+                  ),
+                ),
+                const SizedBox(height: 12),
+                _buildToolCard(
+                  icon: Icons.analytics_rounded,
+                  title: l.translate('yieldPrediction'),
+                  subtitle: l.translate('yieldPredictionDesc'),
+                  color: Colors.orange.shade400,
+                  onTap: () => Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (_) => const YieldPredictionScreen()),
+                  ),
+                ),
+                const SizedBox(height: 12),
+                _buildToolCard(
+                  icon: Icons.show_chart_rounded,
+                  title: l.translate('priceForecast'),
+                  subtitle: l.translate('priceForecastDesc'),
+                  color: Colors.blue.shade400,
+                  onTap: () => Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (_) => const PriceForecastScreen()),
+                  ),
+                ),
+                const SizedBox(height: 24),
+                _buildFindSchemesCTA(l),
+              ],
             ),
           ],
         ),
@@ -665,6 +715,72 @@ class _DashboardScreenState extends State<DashboardScreen>
       'Sunflower': '🌻',
     };
     return map[crop] ?? '🌱';
+  }
+
+  // ── AI Tool Card ──
+  Widget _buildToolCard({
+    required IconData icon,
+    required String title,
+    required String subtitle,
+    required Color color,
+    required VoidCallback onTap,
+  }) {
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(20),
+        child: Container(
+          padding: const EdgeInsets.all(20),
+          decoration: BoxDecoration(
+            color: _cardBg,
+            borderRadius: BorderRadius.circular(20),
+            border: Border.all(color: color.withValues(alpha: 0.3)),
+          ),
+          child: Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: color.withValues(alpha: 0.15),
+                  borderRadius: BorderRadius.circular(14),
+                ),
+                child: Icon(icon, color: color, size: 28),
+              ),
+              const SizedBox(width: 16),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      title,
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      subtitle,
+                      style: TextStyle(
+                        color: Colors.white.withValues(alpha: 0.6),
+                        fontSize: 13,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              Icon(
+                Icons.arrow_forward_ios_rounded,
+                color: Colors.white.withValues(alpha: 0.4),
+                size: 18,
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
   }
 
   // ── Find Schemes CTA ──

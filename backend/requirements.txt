@@ -8,3 +8,8 @@ beautifulsoup4==4.12.2
 pdfplumber==0.10.3
 gunicorn==21.2.0
 certifi==2024.2.2
+scikit-learn==1.4.0
+numpy==1.26.4
+pandas==2.2.0
+prophet==1.1.5
+google-generativeai==0.7.2

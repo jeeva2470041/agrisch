@@ -160,4 +160,52 @@ const Map<String, String> malayalamTranslations = {
   'forecast': '5 ദിവസ പ്രവചനം',
   'marketPrices': 'വിപണി വിലകൾ',
   'dashboard': 'ഡാഷ്‌ബോർഡ്',
+  'aiTools': 'AI ടൂളുകൾ',
+
+  // Voice NLP
+  'voiceInputTitle': 'ശബ്ദ ഇൻപുട്ട്',
+  'voiceInputSubtitle': 'നിങ്ങളുടെ കൃഷി വിവരങ്ങൾ പറയുക',
+  'voiceListening': 'കേൾക്കുന്നു...',
+  'voiceProcessing': 'നിങ്ങളുടെ ഇൻപുട്ട് പ്രോസസ്സ് ചെയ്യുന്നു...',
+  'voiceNoInput': 'ശബ്ദം കണ്ടെത്തിയില്ല. ദയവായി വീണ്ടും ശ്രമിക്കുക.',
+  'voiceFailed': 'ശബ്ദ പ്രോസസ്സിംഗ് പരാജയപ്പെട്ടു. ദയവായി വീണ്ടും ശ്രമിക്കുക.',
+  'voiceSuccess': 'ശബ്ദ ഇൻപുട്ട് പ്രോസസ്സ് ചെയ്തു!',
+  'voiceFieldsFilled': 'ഫീൽഡുകൾ ശബ്ദത്തിൽ നിന്ന് പൂരിപ്പിച്ചു',
+  'voiceNoFields': 'വിശദാംശങ്ങൾ എക്സ്ട്രാക്റ്റ് ചെയ്യാനായില്ല. വ്യക്തമായി സംസാരിക്കുക.',
+
+  // Disease Detection
+  'diseaseDetection': 'രോഗം കണ്ടെത്തൽ',
+  'diseaseDetectionDesc': 'വിള രോഗങ്ങൾ കണ്ടെത്താൻ ഫോട്ടോ അപ്‌ലോഡ് ചെയ്യുക',
+  'diseaseUploadHint': 'AI ഉപയോഗിച്ച് വിള രോഗങ്ങൾ കണ്ടെത്താൻ ഫോട്ടോ എടുക്കുക അല്ലെങ്കിൽ ഗാലറിയിൽ നിന്ന് അപ്‌ലോഡ് ചെയ്യുക',
+  'diseaseCamera': 'ക്യാമറ',
+  'diseaseGallery': 'ഗാലറി',
+  'diseaseAnalyze': 'ചിത്രം വിശകലനം ചെയ്യുക',
+  'diseaseAnalyzing': 'വിശകലനം ചെയ്യുന്നു...',
+  'diseaseSymptoms': 'ലക്ഷണങ്ങൾ',
+  'diseaseTreatment': 'ചികിത്സ',
+  'diseasePrevention': 'പ്രതിരോധം',
+
+  // Yield Prediction
+  'yieldPrediction': 'വിളവ് പ്രവചനം',
+  'yieldPredictionDesc': 'നിങ്ങളുടെ ഇൻപുട്ടുകൾ അടിസ്ഥാനമാക്കി വിള വിളവ് പ്രവചിക്കുക',
+  'yieldPredict': 'വിളവ് പ്രവചിക്കുക',
+  'yieldRainfall': 'മഴ (മി.മീ)',
+  'yieldRainfallHint': 'ഓപ്ഷണൽ: പ്രതീക്ഷിക്കുന്ന മഴ നൽകുക',
+  'yieldAboveAvg': 'ശരാശരിക്ക് മുകളിൽ',
+  'yieldBelowAvg': 'ശരാശരിക്ക് താഴെ',
+  'yieldAverage': 'ശരാശരി',
+  'yieldLower': 'കുറഞ്ഞ പരിധി',
+  'yieldPredicted': 'പ്രവചിച്ച വിളവ്',
+  'yieldUpper': 'ഉയർന്ന പരിധി',
+  'yieldAvgHistorical': 'ചരിത്ര ശരാശരി',
+
+  // Price Forecast
+  'priceForecast': 'വില പ്രവചനം',
+  'priceForecastDesc': 'വിളകളുടെ പ്രവചിച്ച വിപണി വിലകൾ കാണുക',
+  'forecastMSP': 'കുറഞ്ഞ പിന്തുണ വില',
+  'forecastBestDay': 'വിൽക്കാൻ ഏറ്റവും നല്ല ദിവസം',
+  'forecastBestPrice': 'ഏറ്റവും നല്ല വില',
+  'forecastMethod': 'പ്രവചന രീതി',
+  'forecastNext7Days': 'അടുത്ത 7 ദിവസ പ്രവചനം',
+  'forecastHistory': 'വില ചരിത്രം',
 };

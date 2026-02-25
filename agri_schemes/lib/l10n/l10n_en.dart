@@ -193,4 +193,52 @@ const Map<String, String> englishTranslations = {
   'forecast': '5-Day Forecast',
   'marketPrices': 'Market Prices',
   'dashboard': 'Dashboard',
+  'aiTools': 'AI Tools',
+
+  // Voice NLP
+  'voiceInputTitle': 'Voice Input',
+  'voiceInputSubtitle': 'Speak your farm details',
+  'voiceListening': 'Listening...',
+  'voiceProcessing': 'Processing your input...',
+  'voiceNoInput': 'No speech detected. Please try again.',
+  'voiceFailed': 'Voice processing failed. Please try again.',
+  'voiceSuccess': 'Voice input processed!',
+  'voiceFieldsFilled': 'fields filled from voice',
+  'voiceNoFields': 'Could not extract any details. Try speaking clearly.',
+
+  // Disease Detection
+  'diseaseDetection': 'Disease Detection',
+  'diseaseDetectionDesc': 'Upload a photo to detect crop diseases',
+  'diseaseUploadHint': 'Take a photo or upload from gallery to detect crop diseases using AI',
+  'diseaseCamera': 'Camera',
+  'diseaseGallery': 'Gallery',
+  'diseaseAnalyze': 'Analyze Image',
+  'diseaseAnalyzing': 'Analyzing...',
+  'diseaseSymptoms': 'Symptoms',
+  'diseaseTreatment': 'Treatment',
+  'diseasePrevention': 'Prevention',
+
+  // Yield Prediction
+  'yieldPrediction': 'Yield Prediction',
+  'yieldPredictionDesc': 'Predict crop yield based on your inputs',
+  'yieldPredict': 'Predict Yield',
+  'yieldRainfall': 'Rainfall (mm)',
+  'yieldRainfallHint': 'Optional: Enter expected rainfall',
+  'yieldAboveAvg': 'Above Average',
+  'yieldBelowAvg': 'Below Average',
+  'yieldAverage': 'Average',
+  'yieldLower': 'Lower Bound',
+  'yieldPredicted': 'Predicted Yield',
+  'yieldUpper': 'Upper Bound',
+  'yieldAvgHistorical': 'Avg. Historical',
+
+  // Price Forecast
+  'priceForecast': 'Price Forecast',
+  'priceForecastDesc': 'View predicted market prices for crops',
+  'forecastMSP': 'Min. Support Price',
+  'forecastBestDay': 'Best Day to Sell',
+  'forecastBestPrice': 'Best Price',
+  'forecastMethod': 'Forecast Method',
+  'forecastNext7Days': 'Next 7 Days Forecast',
+  'forecastHistory': 'Price History',
 };

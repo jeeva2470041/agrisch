@@ -6,6 +6,7 @@ import '../l10n/app_localizations.dart';
 import '../data/constants.dart';
 import '../models/farmer_input_model.dart';
 import '../services/stt_service.dart';
+import '../services/api_service.dart';
 import 'scheme_recommendation_screen.dart';
 import 'dashboard_screen.dart';
 
@@ -27,6 +28,9 @@ class _FarmerInputScreenState extends State<FarmerInputScreen>
   String? _selectedState;
   double _landSize = 1.0; // Default 1 hectare
   bool _isGettingLocation = false;
+  bool _isVoiceProcessing = false;
+  bool _isVoiceListening = false;
+  final _api = ApiService();
 
   late AnimationController _animController;
   late Animation<double> _fadeAnim;
@@ -53,6 +57,88 @@ class _FarmerInputScreenState extends State<FarmerInputScreen>
   void dispose() {
     _animController.dispose();
     super.dispose();
+  }
+
+  /// Start voice-first NLP input: Listen via STT, then parse with Gemini AI
+  Future<void> _startVoiceNlpInput() async {
+    final stt = Provider.of<SttService>(context, listen: false);
+    final l = AppLocalizations.of(context);
+    final langCode = l.locale.languageCode;
+
+    if (_isVoiceProcessing) return;
+
+    // Start listening
+    setState(() => _isVoiceListening = true);
+
+    String transcript = '';
+    final started = await stt.startListening(
+      onResult: (text) {
+        transcript = text;
+      },
+    );
+
+    if (!started) {
+      setState(() => _isVoiceListening = false);
+      if (mounted) {
+        _showSnackbar(stt.errorMessage.isNotEmpty
+            ? stt.errorMessage
+            : 'Microphone not available', isError: true);
+      }
+      return;
+    }
+
+    // Listen for 5 seconds (or until user stops)
+    await Future.delayed(const Duration(seconds: 5));
+    await stt.stopListening();
+    setState(() => _isVoiceListening = false);
+
+    if (transcript.isEmpty) {
+      _showSnackbar(l.translate('voiceNoInput'), isError: true);
+      return;
+    }
+
+    // Send to Gemini NLP for parsing
+    setState(() => _isVoiceProcessing = true);
+    _showSnackbar(l.translate('voiceProcessing'));
+
+    final result = await _api.parseVoiceInput(
+      transcript: transcript,
+      language: langCode,
+    );
+
+    setState(() => _isVoiceProcessing = false);
+
+    if (result == null) {
+      _showSnackbar(l.translate('voiceFailed'), isError: true);
+      return;
+    }
+
+    // Auto-fill fields from parsed result
+    int filled = 0;
+    if (result['crop'] != null) {
+      setState(() => _selectedCrop = result['crop'] as String);
+      filled++;
+    }
+    if (result['state'] != null) {
+      setState(() => _selectedState = result['state'] as String);
+      filled++;
+    }
+    if (result['season'] != null) {
+      setState(() => _selectedSeason = result['season'] as String);
+      filled++;
+    }
+    if (result['land_size'] != null) {
+      setState(() {
+        _landSize = (result['land_size'] as num).toDouble();
+      });
+      filled++;
+    }
+
+    if (filled > 0) {
+      _showSnackbar('${l.translate('voiceSuccess')} ($filled/4 ${l.translate('voiceFieldsFilled')})');
+    } else {
+      _showSnackbar(l.translate('voiceNoFields'), isError: true);
+    }
   }
 
   void _onFindSchemes() {
@@ -341,6 +427,10 @@ class _FarmerInputScreenState extends State<FarmerInputScreen>
                         children: [
                           // ── Header banner ──
                           _buildInfoBanner(l),
+                          const SizedBox(height: 16),
+
+                          // ── Voice NLP Input Button ──
+                          _buildVoiceNlpButton(l),
                           const SizedBox(height: 24),
 
                           // ── Input Form Card ──
@@ -863,6 +953,111 @@ class _FarmerInputScreenState extends State<FarmerInputScreen>
           ),
         ),
       ],
+    );
+  }
+
+  Widget _buildVoiceNlpButton(AppLocalizations l) {
+    final isActive = _isVoiceListening || _isVoiceProcessing;
+    return InkWell(
+      onTap: isActive ? null : _startVoiceNlpInput,
+      borderRadius: BorderRadius.circular(16),
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 300),
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            colors: _isVoiceListening
+                ? [Colors.red.shade400, Colors.red.shade600]
+                : _isVoiceProcessing
+                    ? [Colors.orange.shade400, Colors.orange.shade600]
+                    : [const Color(0xFF7C4DFF), const Color(0xFF651FFF)],
+          ),
+          borderRadius: BorderRadius.circular(16),
+          boxShadow: isActive
+              ? [
+                  BoxShadow(
+                    color: (_isVoiceListening
+                            ? Colors.red
+                            : Colors.deepPurple)
+                        .withValues(alpha: 0.4),
+                    blurRadius: 16,
+                    spreadRadius: 2,
+                  ),
+                ]
+              : [
+                  BoxShadow(
+                    color: Colors.deepPurple.withValues(alpha: 0.2),
+                    blurRadius: 10,
+                    offset: const Offset(0, 4),
+                  ),
+                ],
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            if (_isVoiceProcessing)
+              const SizedBox(
+                width: 22,
+                height: 22,
+                child: CircularProgressIndicator(
+                  strokeWidth: 2.5,
+                  color: Colors.white,
+                ),
+              )
+            else
+              Icon(
+                _isVoiceListening
+                    ? Icons.mic_rounded
+                    : Icons.mic_none_rounded,
+                color: Colors.white,
+                size: 24,
+              ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    _isVoiceListening
+                        ? l.translate('voiceListening')
+                        : _isVoiceProcessing
+                            ? l.translate('voiceProcessing')
+                            : l.translate('voiceInputTitle'),
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 15,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                  const SizedBox(height: 2),
+                  Text(
+                    l.translate('voiceInputSubtitle'),
+                    style: TextStyle(
+                      color: Colors.white.withValues(alpha: 0.8),
+                      fontSize: 12,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+              decoration: BoxDecoration(
+                color: Colors.white.withValues(alpha: 0.2),
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: Text(
+                'AI',
+                style: TextStyle(
+                  color: Colors.white.withValues(alpha: 0.9),
+                  fontWeight: FontWeight.bold,
+                  fontSize: 12,
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 
