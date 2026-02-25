@@ -128,4 +128,125 @@ class ApiService {
       return 'Could not connect to AI service. Please try again.';
     }
   }
+
+  // ─────────────────────────────────────────────────
+  // Voice NLP — Parse spoken input into structured data
+  // ─────────────────────────────────────────────────
+  Future<Map<String, dynamic>?> parseVoiceInput({
+    required String transcript,
+    String language = 'en',
+  }) async {
+    try {
+      final response = await http
+          .post(
+            Uri.parse('$baseUrl/api/parse-voice-input'),
+            headers: {'Content-Type': 'application/json'},
+            body: json.encode({
+              'transcript': transcript,
+              'language': language,
+            }),
+          )
+          .timeout(const Duration(seconds: 15));
+
+      final body = json.decode(response.body) as Map<String, dynamic>;
+
+      if (response.statusCode == 200 && body['success'] == true) {
+        return body;
+      }
+      return null;
+    } catch (e) {
+      debugPrint('Voice NLP error: $e');
+      return null;
+    }
+  }
+
+  // ─────────────────────────────────────────────────
+  // Price Forecast API
+  // ─────────────────────────────────────────────────
+  Future<Map<String, dynamic>?> getPriceForecast(String crop) async {
+    try {
+      final response = await http.get(
+        Uri.parse('$baseUrl/api/price-forecast?crop=${Uri.encodeComponent(crop)}'),
+      ).timeout(const Duration(seconds: 15));
+
+      if (response.statusCode == 200) {
+        final body = json.decode(response.body) as Map<String, dynamic>;
+        if (body['success'] == true) return body;
+      }
+      return null;
+    } catch (e) {
+      debugPrint('Price forecast error: $e');
+      return null;
+    }
+  }
+
+  // ─────────────────────────────────────────────────
+  // Disease Detection API
+  // ─────────────────────────────────────────────────
+  Future<Map<String, dynamic>?> detectDisease({
+    required String imageBase64,
+    String cropHint = '',
+    String language = 'en',
+  }) async {
+    try {
+      final response = await http
+          .post(
+            Uri.parse('$baseUrl/api/detect-disease'),
+            headers: {'Content-Type': 'application/json'},
+            body: json.encode({
+              'image': imageBase64,
+              'crop_hint': cropHint,
+              'language': language,
+            }),
+          )
+          .timeout(const Duration(seconds: 30));
+
+      final body = json.decode(response.body) as Map<String, dynamic>;
+
+      if (response.statusCode == 200 && body['success'] == true) {
+        return body;
+      }
+      return null;
+    } catch (e) {
+      debugPrint('Disease detection error: $e');
+      return null;
+    }
+  }
+
+  // ─────────────────────────────────────────────────
+  // Yield Prediction API
+  // ─────────────────────────────────────────────────
+  Future<Map<String, dynamic>?> predictYield({
+    required String crop,
+    required String state,
+    required String season,
+    double? rainfall,
+  }) async {
+    try {
+      final Map<String, dynamic> body = {
+        'crop': crop,
+        'state': state,
+        'season': season,
+      };
+      if (rainfall != null) body['rainfall'] = rainfall;
+
+      final response = await http
+          .post(
+            Uri.parse('$baseUrl/api/predict-yield'),
+            headers: {'Content-Type': 'application/json'},
+            body: json.encode(body),
+          )
+          .timeout(const Duration(seconds: 15));
+
+      final respBody = json.decode(response.body) as Map<String, dynamic>;
+
+      if (response.statusCode == 200 && respBody['success'] == true) {
+        return respBody;
+      }
+      return null;
+    } catch (e) {
+      debugPrint('Yield prediction error: $e');
+      return null;
+    }
+  }
 }

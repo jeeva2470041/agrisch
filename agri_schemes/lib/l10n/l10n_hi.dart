@@ -160,4 +160,52 @@ const Map<String, String> hindiTranslations = {
   'forecast': '5-दिन का पूर्वानुमान',
   'marketPrices': 'बाज़ार भाव',
   'dashboard': 'डैशबोर्ड',
+  'aiTools': 'AI उपकरण',
+
+  // Voice NLP
+  'voiceInputTitle': 'वॉइस इनपुट',
+  'voiceInputSubtitle': 'अपने खेत का विवरण बोलें',
+  'voiceListening': 'सुन रहा है...',
+  'voiceProcessing': 'आपका इनपुट प्रोसेस हो रहा है...',
+  'voiceNoInput': 'कोई आवाज़ नहीं पकड़ी गई। कृपया पुनः प्रयास करें।',
+  'voiceFailed': 'वॉइस प्रोसेसिंग विफल। कृपया पुनः प्रयास करें।',
+  'voiceSuccess': 'वॉइस इनपुट प्रोसेस हो गया!',
+  'voiceFieldsFilled': 'फ़ील्ड आवाज़ से भरे गए',
+  'voiceNoFields': 'कोई विवरण नहीं निकाला जा सका। स्पष्ट रूप से बोलें।',
+
+  // Disease Detection
+  'diseaseDetection': 'रोग पहचान',
+  'diseaseDetectionDesc': 'फसल रोगों का पता लगाने के लिए फोटो अपलोड करें',
+  'diseaseUploadHint': 'AI से फसल रोगों का पता लगाने के लिए फोटो लें या गैलरी से अपलोड करें',
+  'diseaseCamera': 'कैमरा',
+  'diseaseGallery': 'गैलरी',
+  'diseaseAnalyze': 'छवि का विश्लेषण करें',
+  'diseaseAnalyzing': 'विश्लेषण हो रहा है...',
+  'diseaseSymptoms': 'लक्षण',
+  'diseaseTreatment': 'उपचार',
+  'diseasePrevention': 'रोकथाम',
+
+  // Yield Prediction
+  'yieldPrediction': 'उपज भविष्यवाणी',
+  'yieldPredictionDesc': 'अपने इनपुट के आधार पर फसल उपज की भविष्यवाणी करें',
+  'yieldPredict': 'उपज की भविष्यवाणी करें',
+  'yieldRainfall': 'वर्षा (मि.मी.)',
+  'yieldRainfallHint': 'वैकल्पिक: अपेक्षित वर्षा दर्ज करें',
+  'yieldAboveAvg': 'औसत से अधिक',
+  'yieldBelowAvg': 'औसत से कम',
+  'yieldAverage': 'औसत',
+  'yieldLower': 'निचली सीमा',
+  'yieldPredicted': 'अनुमानित उपज',
+  'yieldUpper': 'ऊपरी सीमा',
+  'yieldAvgHistorical': 'ऐतिहासिक औसत',
+
+  // Price Forecast
+  'priceForecast': 'मूल्य पूर्वानुमान',
+  'priceForecastDesc': 'फसलों के लिए अनुमानित बाज़ार भाव देखें',
+  'forecastMSP': 'न्यूनतम समर्थन मूल्य',
+  'forecastBestDay': 'बेचने का सबसे अच्छा दिन',
+  'forecastBestPrice': 'सर्वोत्तम मूल्य',
+  'forecastMethod': 'पूर्वानुमान विधि',
+  'forecastNext7Days': 'अगले 7 दिन का पूर्वानुमान',
+  'forecastHistory': 'मूल्य इतिहास',
 };

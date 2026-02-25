@@ -3,14 +3,22 @@ AgriScheme Backend — API routes.
 Implements the eligibility matching engine and scheme management endpoints.
 """
 import re
+import logging
 from flask import Blueprint, request, jsonify
 from db import get_schemes_collection
 from config import DEFAULT_PAGE_SIZE, MAX_PAGE_SIZE
 from weather_service import get_weather
 from market_service import get_market_prices
 from ai_service import ask_ai
+from voice_nlp_service import parse_voice_input
+from ranking_service import rank_schemes
+from forecast_service import get_price_forecast
+from disease_service import detect_disease
+from yield_service import predict_yield
 
 api_bp = Blueprint("api", __name__)
+
+logger = logging.getLogger(__name__)
 
 # ---------------------------------------------------------------------------
 # Input sanitisation helpers
@@ -156,6 +164,13 @@ def get_eligible_schemes():
 
         # Total count for pagination metadata
         total = schemes_collection.count_documents(query)
+
+        # --- Smart Ranking: TF-IDF + Cosine Similarity ---
+        if len(schemes) > 1:
+            try:
+                schemes = rank_schemes(schemes, state, crop, land_size, season or "All")
+            except Exception as rank_err:
+                logger.warning("Ranking fallback: %s", rank_err)
 
         return jsonify({
             "success": True,
@@ -343,6 +358,157 @@ def ask_ai_endpoint():
 
         if "error" in result:
             return jsonify({"success": False, **result}), 502
+
+        return jsonify({"success": True, **result})
+
+    except Exception as exc:
+        return jsonify({"error": f"Internal server error: {exc}"}), 500
+
+
+# ---------------------------------------------------------------------------
+# POST /api/parse-voice-input  —  Voice NLP (STT + Gemini)
+# ---------------------------------------------------------------------------
+@api_bp.route("/parse-voice-input", methods=["POST"])
+def parse_voice():
+    """Parse natural language voice input into structured farmer data.
+
+    Expects JSON body:
+        transcript  (str, required) — raw text from speech-to-text
+        language    (str, optional) — locale code (en/hi/ta/ml), default en
+    """
+    try:
+        data = request.get_json(silent=True)
+        if not data or not isinstance(data, dict):
+            return jsonify({"error": "Request body must be a JSON object"}), 400
+
+        transcript = (data.get("transcript") or "").strip()
+        language = (data.get("language") or "en").strip()
+
+        if not transcript:
+            return jsonify({"error": "transcript is required"}), 400
+        if len(transcript) > 1000:
+            return jsonify({"error": "transcript is too long (max 1000 chars)"}), 400
+
+        result = parse_voice_input(transcript, language)
+
+        if "error" in result:
+            return jsonify({"success": False, **result}), 400
+
+        return jsonify({"success": True, **result})
+
+    except Exception as exc:
+        return jsonify({"error": f"Internal server error: {exc}"}), 500
+
+
+# ---------------------------------------------------------------------------
+# GET /api/price-forecast  —  Market Price Forecasting (Prophet)
+# ---------------------------------------------------------------------------
+@api_bp.route("/price-forecast", methods=["GET"])
+def price_forecast():
+    """Return 7-day price forecast for a crop.
+
+    Query params:
+        crop (str, required) — crop name
+    """
+    try:
+        crop = request.args.get("crop", "").strip()
+        if not crop:
+            return jsonify({"error": "crop query parameter is required"}), 400
+        if len(crop) > 50:
+            return jsonify({"error": "crop parameter too long"}), 400
+
+        result = get_price_forecast(crop)
+
+        if "error" in result:
+            return jsonify({"success": False, **result}), 400
+
+        return jsonify({"success": True, **result})
+
+    except Exception as exc:
+        return jsonify({"error": f"Internal server error: {exc}"}), 500
+
+
+# ---------------------------------------------------------------------------
+# POST /api/detect-disease  —  Crop Disease Detection (Vision AI)
+# ---------------------------------------------------------------------------
+@api_bp.route("/detect-disease", methods=["POST"])
+def detect_disease_endpoint():
+    """Analyze a plant image to detect diseases.
+
+    Expects JSON body:
+        image      (str, required) — base64-encoded image
+        crop_hint  (str, optional) — crop name for context
+        language   (str, optional) — locale code, default en
+    """
+    try:
+        data = request.get_json(silent=True)
+        if not data or not isinstance(data, dict):
+            return jsonify({"error": "Request body must be a JSON object"}), 400
+
+        image_b64 = (data.get("image") or "").strip()
+        crop_hint = (data.get("crop_hint") or "").strip()
+        language = (data.get("language") or "en").strip()
+
+        if not image_b64:
+            return jsonify({"error": "image is required (base64 encoded)"}), 400
+
+        # Limit image size (~4MB base64 ≈ ~5.3M chars)
+        if len(image_b64) > 6_000_000:
+            return jsonify({"error": "Image too large. Maximum 4MB."}), 400
+
+        result = detect_disease(image_b64, crop_hint, language)
+
+        if "error" in result:
+            return jsonify({"success": False, **result}), 400
+
+        return jsonify({"success": True, **result})
+
+    except Exception as exc:
+        return jsonify({"error": f"Internal server error: {exc}"}), 500
+
+
+# ---------------------------------------------------------------------------
+# POST /api/predict-yield  —  Crop Yield Prediction (RandomForest)
+# ---------------------------------------------------------------------------
+@api_bp.route("/predict-yield", methods=["POST"])
+def predict_yield_endpoint():
+    """Predict crop yield based on inputs.
+
+    Expects JSON body:
+        crop      (str, required) — crop name
+        state     (str, required) — state name
+        season    (str, required) — Kharif/Rabi/Zaid
+        rainfall  (float, optional) — expected rainfall in mm
+    """
+    try:
+        data = request.get_json(silent=True)
+        if not data or not isinstance(data, dict):
+            return jsonify({"error": "Request body must be a JSON object"}), 400
+
+        crop = (data.get("crop") or "").strip()
+        state = (data.get("state") or "").strip()
+        season = (data.get("season") or "").strip()
+
+        if not crop:
+            return jsonify({"error": "crop is required"}), 400
+        if not state:
+            return jsonify({"error": "state is required"}), 400
+        if not season:
+            return jsonify({"error": "season is required"}), 400
+
+        rainfall = data.get("rainfall")
+        if rainfall is not None:
+            try:
+                rainfall = float(rainfall)
+                if rainfall < 0 or rainfall > 10000:
+                    return jsonify({"error": "rainfall must be 0-10000 mm"}), 400
+            except (ValueError, TypeError):
+                return jsonify({"error": "rainfall must be a number"}), 400
+
+        result = predict_yield(crop, state, season, rainfall)
+
+        if "error" in result:
+            return jsonify({"success": False, **result}), 400
 
         return jsonify({"success": True, **result})
 

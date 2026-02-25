@@ -191,4 +191,52 @@ const Map<String, String> tamilTranslations = {
   'forecast': '5 நாள் முன்னறிவிப்பு',
   'marketPrices': 'சந்தை விலைகள்',
   'dashboard': 'டாஷ்போர்டு',
+  'aiTools': 'AI கருவிகள்',
+
+  // Voice NLP
+  'voiceInputTitle': 'குரல் உள்ளீடு',
+  'voiceInputSubtitle': 'உங்கள் பண்ணை விவரங்களைப் பேசுங்கள்',
+  'voiceListening': 'கேட்கிறது...',
+  'voiceProcessing': 'உங்கள் உள்ளீட்டை செயலாக்குகிறது...',
+  'voiceNoInput': 'பேச்சு கண்டறியப்படவில்லை. மீண்டும் முயற்சிக்கவும்.',
+  'voiceFailed': 'குரல் செயலாக்கம் தோல்வியடைந்தது. மீண்டும் முயற்சிக்கவும்.',
+  'voiceSuccess': 'குரல் உள்ளீடு செயலாக்கப்பட்டது!',
+  'voiceFieldsFilled': 'புலங்கள் குரலிலிருந்து நிரப்பப்பட்டன',
+  'voiceNoFields': 'விவரங்களை பிரித்தெடுக்க முடியவில்லை. தெளிவாகப் பேசுங்கள்.',
+
+  // Disease Detection
+  'diseaseDetection': 'நோய் கண்டறிதல்',
+  'diseaseDetectionDesc': 'பயிர் நோய்களைக் கண்டறிய புகைப்படம் பதிவேற்றுங்கள்',
+  'diseaseUploadHint': 'AI மூலம் பயிர் நோய்களைக் கண்டறிய புகைப்படம் எடுக்கவும் அல்லது கேலரியிலிருந்து பதிவேற்றவும்',
+  'diseaseCamera': 'கேமரா',
+  'diseaseGallery': 'கேலரி',
+  'diseaseAnalyze': 'படத்தை பகுப்பாய்வு செய்',
+  'diseaseAnalyzing': 'பகுப்பாய்வு செய்கிறது...',
+  'diseaseSymptoms': 'அறிகுறிகள்',
+  'diseaseTreatment': 'சிகிச்சை',
+  'diseasePrevention': 'தடுப்பு',
+
+  // Yield Prediction
+  'yieldPrediction': 'விளைச்சல் கணிப்பு',
+  'yieldPredictionDesc': 'உங்கள் உள்ளீடுகளின் அடிப்படையில் பயிர் விளைச்சலை கணிக்கவும்',
+  'yieldPredict': 'விளைச்சலை கணிக்கவும்',
+  'yieldRainfall': 'மழைப்பொழிவு (மி.மீ)',
+  'yieldRainfallHint': 'விருப்பம்: எதிர்பார்க்கப்படும் மழைப்பொழிவை உள்ளிடுங்கள்',
+  'yieldAboveAvg': 'சராசரிக்கு மேல்',
+  'yieldBelowAvg': 'சராசரிக்கு கீழ்',
+  'yieldAverage': 'சராசரி',
+  'yieldLower': 'குறைந்தபட்ச வரம்பு',
+  'yieldPredicted': 'கணிக்கப்பட்ட விளைச்சல்',
+  'yieldUpper': 'அதிகபட்ச வரம்பு',
+  'yieldAvgHistorical': 'வரலாற்று சராசரி',
+
+  // Price Forecast
+  'priceForecast': 'விலை முன்னறிவிப்பு',
+  'priceForecastDesc': 'பயிர்களுக்கான கணிக்கப்பட்ட சந்தை விலைகளைக் காணுங்கள்',
+  'forecastMSP': 'குறைந்தபட்ச ஆதரவு விலை',
+  'forecastBestDay': 'விற்க சிறந்த நாள்',
+  'forecastBestPrice': 'சிறந்த விலை',
+  'forecastMethod': 'முன்னறிவிப்பு முறை',
+  'forecastNext7Days': 'அடுத்த 7 நாள் முன்னறிவிப்பு',
+  'forecastHistory': 'விலை வரலாறு',
 };
