@@ -181,6 +181,7 @@ const Map<String, String> englishTranslations = {
 
   // Ask AI
   'askAi': 'Ask AI',
+  'askGemini': 'Ask Gemini',
   'askAiHint': 'Ask a question about this scheme...',
   'askAiWelcome': 'Hi! I can answer your questions about',
   'askAiPrompt': 'Ask me anything — eligibility, benefits, how to apply, documents needed, etc.',

@@ -17,10 +17,10 @@ class _ChatMessage {
 }
 
 /// AI Chat Screen — allows farmers to ask questions about a specific scheme
-/// and get AI-powered answers.
+/// or general agriculture queries and get AI-powered answers.
 class AskAiScreen extends StatefulWidget {
-  final SchemeModel scheme;
-  const AskAiScreen({super.key, required this.scheme});
+  final SchemeModel? scheme;
+  const AskAiScreen({super.key, this.scheme});
 
   @override
   State<AskAiScreen> createState() => _AskAiScreenState();
@@ -38,6 +38,10 @@ class _AskAiScreenState extends State<AskAiScreen> {
   /// Build a context string from the scheme for AI.
   String get _schemeContext {
     final s = widget.scheme;
+    if (s == null) {
+      return 'The user is asking general questions about Indian agriculture schemes. '
+          'Help them with eligibility, benefits, application process, and any agriculture-related queries.';
+    }
     return 'Scheme Name: ${s.name}\n'
         'Type: ${s.type}\n'
         'Benefit: ${s.benefit}\n'
@@ -58,7 +62,9 @@ class _AskAiScreenState extends State<AskAiScreen> {
       final l = AppLocalizations.of(context);
       setState(() {
         _messages.add(_ChatMessage(
-          text: '${l.askAiWelcome} "${widget.scheme.name}". ${l.askAiPrompt}',
+          text: widget.scheme != null
+              ? '${l.askAiWelcome} "${widget.scheme!.name}". ${l.askAiPrompt}'
+              : '${l.translate('askGemini')}! ${l.askAiPrompt}',
           isUser: false,
         ));
       });
@@ -127,7 +133,7 @@ class _AskAiScreenState extends State<AskAiScreen> {
       body: Column(
         children: [
           // Scheme chip at the top
-          _buildSchemeHeader(),
+          if (widget.scheme != null) _buildSchemeHeader(),
 
           // Chat messages
           Expanded(
@@ -170,7 +176,7 @@ class _AskAiScreenState extends State<AskAiScreen> {
           const SizedBox(width: 8),
           Expanded(
             child: Text(
-              widget.scheme.name,
+              widget.scheme?.name ?? 'General Assistant',
               style: TextStyle(
                 fontSize: 14,
                 fontWeight: FontWeight.w600,

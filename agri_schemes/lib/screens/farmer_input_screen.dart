@@ -59,21 +59,24 @@ class _FarmerInputScreenState extends State<FarmerInputScreen>
     super.dispose();
   }
 
-  /// Start voice-first NLP input: Listen via STT, then parse with Gemini AI
+  String _voiceTranscript = '';
+
+  /// Start voice-first NLP input: Listen via STT until user taps Stop
   Future<void> _startVoiceNlpInput() async {
     final stt = Provider.of<SttService>(context, listen: false);
     final l = AppLocalizations.of(context);
-    final langCode = l.locale.languageCode;
 
     if (_isVoiceProcessing) return;
 
     // Start listening
+    _voiceTranscript = '';
     setState(() => _isVoiceListening = true);
 
-    String transcript = '';
     final started = await stt.startListening(
       onResult: (text) {
-        transcript = text;
+        _voiceTranscript = text;
+        // Update UI to show live transcript
+        if (mounted) setState(() {});
       },
     );
 
@@ -86,13 +89,19 @@ class _FarmerInputScreenState extends State<FarmerInputScreen>
       }
       return;
     }
+    // Listening continues until user taps the button again (_stopVoiceAndProcess)
+  }
 
-    // Listen for 5 seconds (or until user stops)
-    await Future.delayed(const Duration(seconds: 5));
+  /// Stop listening and send transcript to Gemini for NLP parsing
+  Future<void> _stopVoiceAndProcess() async {
+    final stt = Provider.of<SttService>(context, listen: false);
+    final l = AppLocalizations.of(context);
+    final langCode = l.locale.languageCode;
+
     await stt.stopListening();
     setState(() => _isVoiceListening = false);
 
-    if (transcript.isEmpty) {
+    if (_voiceTranscript.isEmpty) {
       _showSnackbar(l.translate('voiceNoInput'), isError: true);
       return;
     }
@@ -102,7 +111,7 @@ class _FarmerInputScreenState extends State<FarmerInputScreen>
     _showSnackbar(l.translate('voiceProcessing'));
 
     final result = await _api.parseVoiceInput(
-      transcript: transcript,
+      transcript: _voiceTranscript,
       language: langCode,
     );
 
@@ -959,7 +968,11 @@ class _FarmerInputScreenState extends State<FarmerInputScreen>
   Widget _buildVoiceNlpButton(AppLocalizations l) {
     final isActive = _isVoiceListening || _isVoiceProcessing;
     return InkWell(
-      onTap: isActive ? null : _startVoiceNlpInput,
+      onTap: _isVoiceProcessing
+          ? null
+          : _isVoiceListening
+              ? _stopVoiceAndProcess
+              : _startVoiceNlpInput,
       borderRadius: BorderRadius.circular(16),
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 300),
@@ -1007,7 +1020,7 @@ class _FarmerInputScreenState extends State<FarmerInputScreen>
             else
               Icon(
                 _isVoiceListening
-                    ? Icons.mic_rounded
+                    ? Icons.stop_rounded
                     : Icons.mic_none_rounded,
                 color: Colors.white,
                 size: 24,
@@ -1031,7 +1044,11 @@ class _FarmerInputScreenState extends State<FarmerInputScreen>
                   ),
                   const SizedBox(height: 2),
                   Text(
-                    l.translate('voiceInputSubtitle'),
+                    _isVoiceListening
+                        ? (_voiceTranscript.isNotEmpty
+                            ? _voiceTranscript
+                            : l.translate('voiceInputSubtitle'))
+                        : l.translate('voiceInputSubtitle'),
                     style: TextStyle(
                       color: Colors.white.withValues(alpha: 0.8),
                       fontSize: 12,
@@ -1047,7 +1064,7 @@ class _FarmerInputScreenState extends State<FarmerInputScreen>
                 borderRadius: BorderRadius.circular(8),
               ),
               child: Text(
-                'AI',
+                _isVoiceListening ? 'STOP' : 'AI',
                 style: TextStyle(
                   color: Colors.white.withValues(alpha: 0.9),
                   fontWeight: FontWeight.bold,

@@ -20,6 +20,16 @@ api_bp = Blueprint("api", __name__)
 
 logger = logging.getLogger(__name__)
 
+
+# ---------------------------------------------------------------------------
+# Health-check
+# ---------------------------------------------------------------------------
+@api_bp.route("/", methods=["GET"])
+def health_check():
+    """Simple health-check so GET /api/ returns 200."""
+    return jsonify({"status": "ok", "message": "AgriScheme API is running"}), 200
+
+
 # ---------------------------------------------------------------------------
 # Input sanitisation helpers
 # ---------------------------------------------------------------------------

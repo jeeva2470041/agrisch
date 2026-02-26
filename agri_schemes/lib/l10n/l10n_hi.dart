@@ -148,6 +148,7 @@ const Map<String, String> hindiTranslations = {
 
   // Ask AI
   'askAi': 'AI से पूछें',
+  'askGemini': 'Gemini से पूछें',
   'askAiHint': 'इस योजना के बारे में कोई प्रश्न पूछें...',
   'askAiWelcome': 'नमस्ते! मैं इस योजना के बारे में आपके प्रश्नों का उत्तर दे सकता हूं',
   'askAiPrompt': 'पात्रता, लाभ, आवेदन कैसे करें, आवश्यक दस्तावेज — कुछ भी पूछें।',

@@ -4,6 +4,7 @@ import '../l10n/app_localizations.dart';
 import '../models/farmer_input_model.dart';
 import '../models/scheme_model.dart';
 import 'scheme_detail_screen.dart';
+import 'ask_ai_screen.dart';
 import '../services/scheme_matching_service.dart';
 import '../services/tts_service.dart';
 
@@ -702,6 +703,41 @@ class _SchemeRecommendationScreenState
                       ),
                     ),
                   ],
+                ),
+                const SizedBox(height: 8),
+
+                // ── Ask Gemini button ──
+                SizedBox(
+                  width: double.infinity,
+                  height: 38,
+                  child: OutlinedButton.icon(
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => AskAiScreen(scheme: scheme),
+                        ),
+                      );
+                    },
+                    style: OutlinedButton.styleFrom(
+                      foregroundColor: const Color(0xFF7C4DFF),
+                      side: BorderSide(
+                        color: const Color(0xFF7C4DFF).withValues(alpha: 0.4),
+                      ),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      padding: EdgeInsets.zero,
+                    ),
+                    icon: const Icon(Icons.auto_awesome, size: 16),
+                    label: Text(
+                      localizations.translate('askGemini'),
+                      style: const TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ),
                 ),
               ],
             ),

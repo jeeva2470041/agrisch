@@ -90,8 +90,8 @@ class SttService extends ChangeNotifier {
           notifyListeners();
         },
         localeId: _currentLocaleId,
-        listenFor: const Duration(seconds: 15),
-        pauseFor: const Duration(seconds: 3),
+        listenFor: const Duration(seconds: 60),
+        pauseFor: const Duration(seconds: 5),
       );
     } catch (e) {
       debugPrint('STT listen error: $e');
