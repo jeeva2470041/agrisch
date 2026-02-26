@@ -105,7 +105,7 @@ If the image is not a plant or is unclear, still return the JSON with is_healthy
         ],
         "generationConfig": {
             "temperature": 0.2,
-            "maxOutputTokens": 1024,
+            "maxOutputTokens": 2048,
         },
     }
 
@@ -141,7 +141,22 @@ If the image is not a plant or is unclear, still return the JSON with is_healthy
             cleaned = cleaned.rsplit("```", 1)[0]
         cleaned = cleaned.strip()
 
+        # Fix truncated JSON — balance braces/brackets and strip trailing garbage
+        open_braces = cleaned.count("{") - cleaned.count("}")
+        open_brackets = cleaned.count("[") - cleaned.count("]")
+        # If truncated mid-string, close the string first
+        if open_braces > 0 or open_brackets > 0:
+            # Remove trailing incomplete key-value (after last comma or colon)
+            import re
+            # Strip incomplete trailing string/value
+            cleaned = re.sub(r',\s*"[^"]*"?\s*:?\s*"?[^"{}\[\]]*$', '', cleaned)
+            open_braces = cleaned.count("{") - cleaned.count("}")
+            open_brackets = cleaned.count("[") - cleaned.count("]")
+            cleaned += "]" * max(0, open_brackets)
+            cleaned += "}" * max(0, open_braces)
+
         result = json.loads(cleaned)
+        logger.info("Disease detection result: %s", json.dumps(result, ensure_ascii=False)[:500])
 
         # Ensure required fields
         result.setdefault("is_healthy", None)

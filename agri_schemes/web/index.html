@@ -33,6 +33,11 @@
   <link rel="manifest" href="manifest.json">
 </head>
 <body>
+  <script>
+    // Use HTML renderer to avoid downloading CanvasKit from CDN
+    // (fixes "Failed to fetch" on restricted networks)
+    window.flutterWebRenderer = "html";
+  </script>
   <script src="flutter_bootstrap.js" async></script>
 </body>
 </html>

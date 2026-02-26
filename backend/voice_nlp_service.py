@@ -93,7 +93,7 @@ OUTPUT FORMAT (strict JSON):
         ],
         "generationConfig": {
             "temperature": 0.1,
-            "maxOutputTokens": 256,
+            "maxOutputTokens": 1024,
         },
     }
 
@@ -128,8 +128,15 @@ OUTPUT FORMAT (strict JSON):
             cleaned = cleaned.rsplit("```", 1)[0]
         cleaned = cleaned.strip()
 
+        # Fix truncated JSON — balance braces/brackets
+        open_braces = cleaned.count("{") - cleaned.count("}")
+        open_brackets = cleaned.count("[") - cleaned.count("]")
+        cleaned += "]" * max(0, open_brackets)
+        cleaned += "}" * max(0, open_braces)
+
         # Parse JSON
         parsed = json.loads(cleaned)
+        logger.info("Voice NLP parsed JSON: %s", json.dumps(parsed, ensure_ascii=False))
 
         # Validate and sanitize
         result = {
