@@ -15,7 +15,7 @@ __pycache__/
 .env
 .env.local
 .env.production
-
+.env.example
 # Test outputs
 test_output.txt
 test_results.txt

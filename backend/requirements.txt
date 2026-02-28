@@ -14,7 +14,10 @@ pdfplumber==0.11.9
 
 # ── AI / ML ──
 google-generativeai==0.8.6
-scikit-learn==1.3.2
+scikit-learn==1.8.0
 numpy==1.26.2
 pandas==2.3.1
 prophet==1.3.0
+
+# ── New features (Alerts, Calendar, Soil, Crop Recommender) ──
+# No additional packages needed — uses existing Gemini + Open-Meteo APIs

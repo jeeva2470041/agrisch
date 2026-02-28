@@ -3,6 +3,9 @@ import 'package:url_launcher/url_launcher.dart';
 
 import '../models/scheme_model.dart';
 import '../l10n/app_localizations.dart';
+import 'dashboard_screen.dart';
+import 'farmer_input_screen.dart';
+import 'settings_screen.dart';
 
 class SchemeDetailScreen extends StatelessWidget {
   final SchemeModel scheme;
@@ -22,16 +25,16 @@ class SchemeDetailScreen extends StatelessWidget {
     try {
       if (!await launchUrl(uri, mode: LaunchMode.externalApplication)) {
         if (context.mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Could not open link')),
-          );
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(const SnackBar(content: Text('Could not open link')));
         }
       }
     } catch (_) {
       if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Could not open link')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(const SnackBar(content: Text('Could not open link')));
       }
     }
   }
@@ -41,6 +44,71 @@ class SchemeDetailScreen extends StatelessWidget {
     final l = AppLocalizations.of(context);
 
     return Scaffold(
+      bottomNavigationBar: Container(
+        decoration: BoxDecoration(
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.3),
+              blurRadius: 10,
+              offset: const Offset(0, -2),
+            ),
+          ],
+        ),
+        child: BottomNavigationBar(
+          currentIndex: 0, // Home/Schemes section
+          onTap: (index) {
+            if (index == 4) {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => const SettingsScreen()),
+              );
+            } else if (index != 0) {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => DashboardScreen(initialTab: index - 1),
+                ),
+              );
+            } else {
+              // already home, but can navigate back to finder
+              Navigator.popUntil(context, (route) => route.isFirst);
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(builder: (_) => const FarmerInputScreen()),
+              );
+            }
+          },
+          backgroundColor: const Color(0xFF122214),
+          selectedItemColor: const Color(0xFF43A047),
+          unselectedItemColor: Colors.white54,
+          type: BottomNavigationBarType.fixed,
+          selectedFontSize: 11,
+          unselectedFontSize: 10,
+          items: [
+            BottomNavigationBarItem(
+              icon: const Icon(Icons.search_rounded),
+              label: l.translate('schemesNav'),
+            ),
+            BottomNavigationBarItem(
+              icon: const Icon(Icons.cloud_outlined),
+              label: l.translate('weatherNav'),
+            ),
+            BottomNavigationBarItem(
+              icon: const Icon(Icons.storefront_outlined),
+              label: l.translate('marketNav'),
+            ),
+            BottomNavigationBarItem(
+              icon: const Icon(Icons.auto_awesome_outlined),
+              label: l.translate('aiToolsNav'),
+            ),
+            BottomNavigationBarItem(
+              icon: const Icon(Icons.settings_outlined),
+              activeIcon: const Icon(Icons.settings),
+              label: l.translate('settingsNav'),
+            ),
+          ],
+        ),
+      ),
       backgroundColor: const Color(0xFFF5F5F5),
       body: CustomScrollView(
         slivers: [
@@ -53,11 +121,18 @@ class SchemeDetailScreen extends StatelessWidget {
             flexibleSpace: FlexibleSpaceBar(
               title: Text(
                 scheme.name,
-                style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+                style: const TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w600,
+                ),
                 maxLines: 2,
                 overflow: TextOverflow.ellipsis,
               ),
-              titlePadding: const EdgeInsets.only(left: 56, bottom: 16, right: 16),
+              titlePadding: const EdgeInsets.only(
+                left: 56,
+                bottom: 16,
+                right: 16,
+              ),
               background: Container(
                 decoration: const BoxDecoration(
                   gradient: LinearGradient(
@@ -92,7 +167,10 @@ class SchemeDetailScreen extends StatelessWidget {
                   if (scheme.benefit.isNotEmpty)
                     Container(
                       width: double.infinity,
-                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 12,
+                      ),
                       decoration: BoxDecoration(
                         color: Colors.orange.shade50,
                         borderRadius: BorderRadius.circular(12),
@@ -100,7 +178,11 @@ class SchemeDetailScreen extends StatelessWidget {
                       ),
                       child: Row(
                         children: [
-                          Icon(Icons.currency_rupee, color: Colors.orange.shade700, size: 22),
+                          Icon(
+                            Icons.currency_rupee,
+                            color: Colors.orange.shade700,
+                            size: 22,
+                          ),
                           const SizedBox(width: 8),
                           Expanded(
                             child: Text(
@@ -123,30 +205,54 @@ class SchemeDetailScreen extends StatelessWidget {
                   const SizedBox(height: 8),
                   Text(
                     'Visit the official portal, fill the application form, and upload the required documents listed below.',
-                    style: TextStyle(fontSize: 14, color: Colors.grey.shade700, height: 1.5),
+                    style: TextStyle(
+                      fontSize: 14,
+                      color: Colors.grey.shade700,
+                      height: 1.5,
+                    ),
                   ),
 
                   const SizedBox(height: 24),
 
                   // ── Section: Eligibility ──
-                  _sectionHeader(Icons.verified_user_outlined, l.eligibilitySummary),
+                  _sectionHeader(
+                    Icons.verified_user_outlined,
+                    l.eligibilitySummary,
+                  ),
                   const SizedBox(height: 8),
                   Card(
                     elevation: 0,
                     color: _primaryLight,
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
                     child: Padding(
                       padding: const EdgeInsets.all(16),
                       child: Column(
                         children: [
-                          _eligibilityRow(Icons.location_on_outlined, 'States', scheme.states.join(', ')),
+                          _eligibilityRow(
+                            Icons.location_on_outlined,
+                            'States',
+                            scheme.states.join(', '),
+                          ),
                           const Divider(height: 20),
-                          _eligibilityRow(Icons.grass_outlined, 'Crops', scheme.crops.join(', ')),
+                          _eligibilityRow(
+                            Icons.grass_outlined,
+                            'Crops',
+                            scheme.crops.join(', '),
+                          ),
                           const Divider(height: 20),
-                          _eligibilityRow(Icons.square_foot_outlined, 'Land',
-                              '${scheme.minLand} – ${scheme.maxLand} hectares'),
+                          _eligibilityRow(
+                            Icons.square_foot_outlined,
+                            'Land',
+                            '${scheme.minLand} – ${scheme.maxLand} hectares',
+                          ),
                           const Divider(height: 20),
-                          _eligibilityRow(Icons.wb_sunny_outlined, 'Season', scheme.season),
+                          _eligibilityRow(
+                            Icons.wb_sunny_outlined,
+                            'Season',
+                            scheme.season,
+                          ),
                         ],
                       ),
                     ),
@@ -155,50 +261,67 @@ class SchemeDetailScreen extends StatelessWidget {
                   const SizedBox(height: 24),
 
                   // ── Section: Documents checklist ──
-                  _sectionHeader(Icons.checklist_outlined, l.documentsChecklist),
+                  _sectionHeader(
+                    Icons.checklist_outlined,
+                    l.documentsChecklist,
+                  ),
                   const SizedBox(height: 8),
                   if (scheme.documentsRequired.isEmpty)
                     Padding(
                       padding: const EdgeInsets.symmetric(vertical: 8),
-                      child: Text(l.noDocumentsRequired,
-                          style: TextStyle(color: Colors.grey.shade600)),
+                      child: Text(
+                        l.noDocumentsRequired,
+                        style: TextStyle(color: Colors.grey.shade600),
+                      ),
                     )
                   else
                     Card(
                       elevation: 0,
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
                       child: Column(
-                        children: List.generate(scheme.documentsRequired.length, (i) {
-                          final doc = scheme.documentsRequired[i];
-                          return Column(
-                            children: [
-                              ListTile(
-                                leading: Container(
-                                  width: 32,
-                                  height: 32,
-                                  decoration: BoxDecoration(
-                                    color: _primaryLight,
-                                    shape: BoxShape.circle,
-                                  ),
-                                  child: Center(
-                                    child: Text(
-                                      '${i + 1}',
-                                      style: const TextStyle(
-                                        fontWeight: FontWeight.bold,
-                                        color: _primary,
-                                        fontSize: 14,
+                        children: List.generate(
+                          scheme.documentsRequired.length,
+                          (i) {
+                            final doc = scheme.documentsRequired[i];
+                            return Column(
+                              children: [
+                                ListTile(
+                                  leading: Container(
+                                    width: 32,
+                                    height: 32,
+                                    decoration: BoxDecoration(
+                                      color: _primaryLight,
+                                      shape: BoxShape.circle,
+                                    ),
+                                    child: Center(
+                                      child: Text(
+                                        '${i + 1}',
+                                        style: const TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                          color: _primary,
+                                          fontSize: 14,
+                                        ),
                                       ),
                                     ),
                                   ),
+                                  title: Text(
+                                    doc,
+                                    style: const TextStyle(fontSize: 14),
+                                  ),
+                                  trailing: const Icon(
+                                    Icons.check_circle,
+                                    color: _primary,
+                                    size: 20,
+                                  ),
                                 ),
-                                title: Text(doc, style: const TextStyle(fontSize: 14)),
-                                trailing: const Icon(Icons.check_circle, color: _primary, size: 20),
-                              ),
-                              if (i < scheme.documentsRequired.length - 1)
-                                const Divider(height: 1, indent: 56),
-                            ],
-                          );
-                        }),
+                                if (i < scheme.documentsRequired.length - 1)
+                                  const Divider(height: 1, indent: 56),
+                              ],
+                            );
+                          },
+                        ),
                       ),
                     ),
 
@@ -212,13 +335,20 @@ class SchemeDetailScreen extends StatelessWidget {
                       onPressed: () => _openUrl(context, scheme.officialLink),
                       icon: const Icon(Icons.open_in_new, size: 20),
                       label: Text(
-                        scheme.officialLink.isNotEmpty ? l.applyOnline : l.applyOnline,
-                        style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+                        scheme.officialLink.isNotEmpty
+                            ? l.applyOnline
+                            : l.applyOnline,
+                        style: const TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                        ),
                       ),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: _primary,
                         foregroundColor: Colors.white,
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(14),
+                        ),
                         elevation: 2,
                       ),
                     ),
@@ -230,7 +360,10 @@ class SchemeDetailScreen extends StatelessWidget {
                     Center(
                       child: Text(
                         scheme.officialLink,
-                        style: TextStyle(fontSize: 12, color: Colors.grey.shade500),
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: Colors.grey.shade500,
+                        ),
                         textAlign: TextAlign.center,
                       ),
                     ),
@@ -255,7 +388,11 @@ class SchemeDetailScreen extends StatelessWidget {
         const SizedBox(width: 8),
         Text(
           title,
-          style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Color(0xFF333333)),
+          style: const TextStyle(
+            fontSize: 18,
+            fontWeight: FontWeight.bold,
+            color: Color(0xFF333333),
+          ),
         ),
       ],
     );
@@ -268,11 +405,17 @@ class SchemeDetailScreen extends StatelessWidget {
         const SizedBox(width: 12),
         SizedBox(
           width: 60,
-          child: Text(label, style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 13)),
+          child: Text(
+            label,
+            style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 13),
+          ),
         ),
         const SizedBox(width: 8),
         Expanded(
-          child: Text(value, style: TextStyle(fontSize: 13, color: Colors.grey.shade800)),
+          child: Text(
+            value,
+            style: TextStyle(fontSize: 13, color: Colors.grey.shade800),
+          ),
         ),
       ],
     );

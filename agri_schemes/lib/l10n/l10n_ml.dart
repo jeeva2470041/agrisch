@@ -163,6 +163,13 @@ const Map<String, String> malayalamTranslations = {
   'dashboard': 'ഡാഷ്‌ബോർഡ്',
   'aiTools': 'AI ടൂളുകൾ',
 
+  // Short nav-bar labels
+  'schemesNav': 'പദ്ധതികൾ',
+  'weatherNav': 'കാലാവസ്ഥ',
+  'marketNav': 'വിപണി',
+  'aiToolsNav': 'AI',
+  'settingsNav': 'ക്രമീകരണം',
+
   // Voice NLP
   'voiceInputTitle': 'ശബ്ദ ഇൻപുട്ട്',
   'voiceInputSubtitle': 'നിങ്ങളുടെ കൃഷി വിവരങ്ങൾ പറയുക',
@@ -209,4 +216,73 @@ const Map<String, String> malayalamTranslations = {
   'forecastMethod': 'പ്രവചന രീതി',
   'forecastNext7Days': 'അടുത്ത 7 ദിവസ പ്രവചനം',
   'forecastHistory': 'വില ചരിത്രം',
+
+  // Soil Analysis
+  'soilAnalysis': 'മണ്ണ് ആരോഗ്യ വിശകലനം',
+  'photoAnalysis': 'ഫോട്ടോ വിശകലനം',
+  'manualEntry': 'മാനുവൽ എൻട്രി',
+  'tapToUploadSoilPhoto': 'മണ്ണിന്റെ ഫോട്ടോ അപ്‌ലോഡ് ചെയ്യാൻ ടാപ്പ് ചെയ്യുക',
+  'analyzing': 'വിശകലനം ചെയ്യുന്നു...',
+  'analyzeSoil': 'മണ്ണ് വിശകലനം',
+  'soilTestValues': 'മണ്ണ് പരിശോധന മൂല്യങ്ങൾ നൽകുക',
+  'soilType': 'മണ്ണ് തരം',
+  'phValue': 'pH മൂല്യം',
+  'nitrogen': 'നൈട്രജൻ',
+  'phosphorus': 'ഫോസ്ഫറസ്',
+  'potassium': 'പൊട്ടാസ്യം',
+  'organicCarbon': 'ജൈവ കാർബൺ',
+
+  // Crop Recommendation
+  'cropRecommendation': 'സ്മാർട്ട് വിള ശുപാർശ',
+  'smartCropRecommender': 'സ്മാർട്ട് വിള ശുപാർശ',
+  'cropRecommenderDesc': 'AI മണ്ണ്, കാലാവസ്ഥ, വിപണി, പദ്ധതികൾ വിശകലനം ചെയ്ത് മികച്ച വിളകൾ നിർദ്ദേശിക്കുന്നു',
+  'waterSource': 'ജല സ്രോതസ്സ്',
+  'acres': 'ഏക്കർ',
+  'getRecommendations': 'ശുപാർശകൾ നേടുക',
+  'changeInputs': 'ഇൻപുട്ടുകൾ മാറ്റുക',
+
+  // Crop Calendar
+  'cropCalendar': 'വിള കലണ്ടർ',
+  'cropCalendarDesc': 'ടാസ്‌ക്കുകളും ടൈംലൈനും ഉള്ള വളർച്ചാ പദ്ധതി നേടുക',
+  'crop': 'വിള',
+  'sowingDate': 'വിതയ്ക്കൽ തീയതി',
+  'loading': 'ലോഡ് ചെയ്യുന്നു...',
+  'generateCalendar': 'കലണ്ടർ സൃഷ്ടിക്കുക',
+  'calendar': 'കലണ്ടർ',
+  'overallProgress': 'മൊത്തം പുരോഗതി',
+  'upcomingTasks': 'വരാനിരിക്കുന്ന ടാസ്‌ക്കുകൾ',
+
+  // Alert Settings
+  'alertSettings': 'സ്മാർട്ട് അലേർട്ടുകൾ',
+  'weatherAlerts': 'കാലാവസ്ഥ അലേർട്ടുകൾ',
+  'priceAlerts': 'വില അലേർട്ടുകൾ',
+  'weatherAlertsEnabled': 'കാലാവസ്ഥ അലേർട്ടുകൾ',
+  'weatherAlertsDesc': 'നിങ്ങളുടെ പ്രദേശത്ത് കടുത്ത കാലാവസ്ഥയെ കുറിച്ച് അറിയിപ്പ് നേടുക',
+  'priceAlertsEnabled': 'വില അലേർട്ടുകൾ',
+  'priceAlertsDesc': 'വിള വിലകൾ നിങ്ങളുടെ ലക്ഷ്യത്തിലെത്തുമ്പോൾ അറിയിപ്പ് നേടുക',
+  'checkNow': 'ഇപ്പോൾ പരിശോധിക്കുക',
+  'checking': 'പരിശോധിക്കുന്നു...',
+  'yourPriceTriggers': 'നിങ്ങളുടെ വില ട്രിഗറുകൾ',
+  'noPriceTriggers': 'വില ട്രിഗറുകൾ ഇതുവരെ സെറ്റ് ചെയ്തിട്ടില്ല',
+  'addPriceTrigger': 'വില ട്രിഗർ ചേർക്കുക',
+  'cropName': 'വിളയുടെ പേര്',
+  'thresholdPrice': 'പരിധി വില',
+  'alertWhen': 'എപ്പോൾ അലേർട്ട്:',
+  'above': 'മുകളിൽ',
+  'below': 'താഴെ',
+  'addTrigger': 'ട്രിഗർ ചേർക്കുക',
+  'checkPriceAlerts': 'വില അലേർട്ടുകൾ പരിശോധിക്കുക',
+
+  // Settings
+  'settings': 'ക്രമീകരണങ്ങൾ',
+  'appearance': 'രൂപഭാവം',
+  'darkMode': 'ഡാർക്ക് മോഡ്',
+  'darkModeDesc': 'ലൈറ്റ്, ഡാർക്ക് തീമുകൾക്കിടയിൽ മാറുക',
+  'location': 'സ്ഥലം',
+  'locationNotSet': 'സ്ഥലം സെറ്റ് ചെയ്തിട്ടില്ല',
+  'detectLocation': 'എന്റെ സ്ഥാനം കണ്ടെത്തുക',
+  'detecting': 'കണ്ടെത്തുന്നു...',
+  'farmerProfile': 'കർഷക പ്രൊഫൈൽ',
+  'soilPh': 'മണ്ണിന്റെ pH',
+  'saveProfile': 'പ്രൊഫൈൽ സേവ് ചെയ്യുക',
 };

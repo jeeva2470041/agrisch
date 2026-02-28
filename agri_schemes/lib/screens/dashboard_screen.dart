@@ -7,6 +7,11 @@ import 'farmer_input_screen.dart';
 import 'disease_detection_screen.dart';
 import 'yield_prediction_screen.dart';
 import 'price_forecast_screen.dart';
+import 'soil_analysis_screen.dart';
+import 'crop_recommendation_screen.dart';
+import 'crop_calendar_screen.dart';
+import 'alert_settings_screen.dart';
+import 'settings_screen.dart';
 
 /// Dashboard Screen — The new home screen after landing.
 /// Shows Weather, Market Prices and a CTA to Find Schemes.
@@ -20,7 +25,7 @@ class DashboardScreen extends StatefulWidget {
 
 class _DashboardScreenState extends State<DashboardScreen>
     with TickerProviderStateMixin {
-  late TabController _tabCtrl;
+  int _selectedIndex = 0;
   final _api = ApiService();
 
   // Location
@@ -46,11 +51,7 @@ class _DashboardScreenState extends State<DashboardScreen>
   @override
   void initState() {
     super.initState();
-    _tabCtrl = TabController(
-      length: 3,
-      vsync: this,
-      initialIndex: widget.initialTab,
-    );
+    _selectedIndex = widget.initialTab.clamp(0, 2);
     _fadeCtrl = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 800),
@@ -62,7 +63,6 @@ class _DashboardScreenState extends State<DashboardScreen>
 
   @override
   void dispose() {
-    _tabCtrl.dispose();
     _fadeCtrl.dispose();
     super.dispose();
   }
@@ -158,29 +158,73 @@ class _DashboardScreenState extends State<DashboardScreen>
             },
           ),
         ],
-        bottom: TabBar(
-          controller: _tabCtrl,
-          indicatorColor: Colors.white,
-          indicatorWeight: 3,
-          labelColor: Colors.white,
-          unselectedLabelColor: Colors.white54,
-          tabs: [
-            Tab(icon: const Icon(Icons.cloud_outlined), text: l.weather),
-            Tab(
-              icon: const Icon(Icons.storefront_outlined),
-              text: l.marketPrices,
+      ),
+      bottomNavigationBar: Container(
+        decoration: BoxDecoration(
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.3),
+              blurRadius: 10,
+              offset: const Offset(0, -2),
             ),
-            Tab(
+          ],
+        ),
+        child: BottomNavigationBar(
+          currentIndex:
+              _selectedIndex + 1, // Offset by 1 because Home is index 0
+          onTap: (index) {
+            if (index == 0) {
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(builder: (_) => const FarmerInputScreen()),
+              );
+            } else if (index == 4) {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => const SettingsScreen()),
+              );
+            } else {
+              setState(() => _selectedIndex = index - 1);
+            }
+          },
+          backgroundColor: const Color(0xFF122214),
+          selectedItemColor: _accentGreen,
+          unselectedItemColor: Colors.white54,
+          type: BottomNavigationBarType.fixed,
+          selectedFontSize: 11,
+          unselectedFontSize: 10,
+          items: [
+            BottomNavigationBarItem(
+              icon: const Icon(Icons.search_rounded),
+              label: l.translate('schemesNav'),
+            ),
+            BottomNavigationBarItem(
+              icon: const Icon(Icons.cloud_outlined),
+              activeIcon: const Icon(Icons.cloud),
+              label: l.translate('weatherNav'),
+            ),
+            BottomNavigationBarItem(
+              icon: const Icon(Icons.storefront_outlined),
+              activeIcon: const Icon(Icons.storefront),
+              label: l.translate('marketNav'),
+            ),
+            BottomNavigationBarItem(
               icon: const Icon(Icons.auto_awesome_outlined),
-              text: l.translate('aiTools'),
+              activeIcon: const Icon(Icons.auto_awesome),
+              label: l.translate('aiToolsNav'),
+            ),
+            BottomNavigationBarItem(
+              icon: const Icon(Icons.settings_outlined),
+              activeIcon: const Icon(Icons.settings),
+              label: l.translate('settingsNav'),
             ),
           ],
         ),
       ),
       body: FadeTransition(
         opacity: _fadeAnim,
-        child: TabBarView(
-          controller: _tabCtrl,
+        child: IndexedStack(
+          index: _selectedIndex,
           children: [
             // ── Weather Tab ──
             RefreshIndicator(
@@ -207,7 +251,6 @@ class _DashboardScreenState extends State<DashboardScreen>
                     _buildForecastRow(),
                   ],
                   const SizedBox(height: 32),
-                  _buildFindSchemesCTA(l),
                 ],
               ),
             ),
@@ -228,6 +271,7 @@ class _DashboardScreenState extends State<DashboardScreen>
                   _buildSectionTitle('📈', l.marketPrices),
                   const SizedBox(height: 10),
                   _buildMarketPrices(),
+                  const SizedBox(height: 32),
                 ],
               ),
             ),
@@ -236,42 +280,99 @@ class _DashboardScreenState extends State<DashboardScreen>
             ListView(
               padding: const EdgeInsets.fromLTRB(16, 16, 16, 32),
               children: [
-                _buildSectionTitle('🤖', l.translate('aiTools')),
-                const SizedBox(height: 16),
-                _buildToolCard(
-                  icon: Icons.local_florist_rounded,
+                _buildSectionTitle('✨', l.translate('aiTools')),
+                const SizedBox(height: 20),
+                _buildAiToolCard(
                   title: l.translate('diseaseDetection'),
-                  subtitle: l.translate('diseaseDetectionDesc'),
+                  subtitle: 'Upload photo of crop to detect diseases',
+                  icon: Icons.local_florist_rounded,
                   color: Colors.red.shade400,
                   onTap: () => Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (_) => const DiseaseDetectionScreen()),
+                    MaterialPageRoute(
+                      builder: (_) => const DiseaseDetectionScreen(),
+                    ),
                   ),
                 ),
-                const SizedBox(height: 12),
-                _buildToolCard(
-                  icon: Icons.analytics_rounded,
+                const SizedBox(height: 16),
+                _buildAiToolCard(
                   title: l.translate('yieldPrediction'),
-                  subtitle: l.translate('yieldPredictionDesc'),
+                  subtitle: 'Estimate crop yield based on conditions',
+                  icon: Icons.analytics_rounded,
                   color: Colors.orange.shade400,
                   onTap: () => Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (_) => const YieldPredictionScreen()),
+                    MaterialPageRoute(
+                      builder: (_) => const YieldPredictionScreen(),
+                    ),
                   ),
                 ),
-                const SizedBox(height: 12),
-                _buildToolCard(
-                  icon: Icons.show_chart_rounded,
+                const SizedBox(height: 16),
+                _buildAiToolCard(
                   title: l.translate('priceForecast'),
-                  subtitle: l.translate('priceForecastDesc'),
+                  subtitle: 'Predict future market prices for crops',
+                  icon: Icons.show_chart_rounded,
                   color: Colors.blue.shade400,
                   onTap: () => Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (_) => const PriceForecastScreen()),
+                    MaterialPageRoute(
+                      builder: (_) => const PriceForecastScreen(),
+                    ),
                   ),
                 ),
-                const SizedBox(height: 24),
-                _buildFindSchemesCTA(l),
+                const SizedBox(height: 16),
+                _buildAiToolCard(
+                  title: l.translate('soilAnalysis'),
+                  subtitle: 'Analyze soil health from photo or test values',
+                  icon: Icons.terrain_rounded,
+                  color: Colors.brown.shade400,
+                  onTap: () => Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => const SoilAnalysisScreen(),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 16),
+                _buildAiToolCard(
+                  title: l.translate('cropRecommendation'),
+                  subtitle: 'AI-powered crop suggestions for your land',
+                  icon: Icons.auto_awesome,
+                  color: Colors.deepPurple.shade400,
+                  onTap: () => Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => const CropRecommendationScreen(),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 16),
+                _buildAiToolCard(
+                  title: l.translate('cropCalendar'),
+                  subtitle: 'Growth phases, tasks & timeline for your crop',
+                  icon: Icons.calendar_month_rounded,
+                  color: Colors.teal.shade400,
+                  onTap: () => Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => const CropCalendarScreen(),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 16),
+                _buildAiToolCard(
+                  title: l.translate('alertSettings'),
+                  subtitle: 'Weather & price alert notifications',
+                  icon: Icons.notifications_active_rounded,
+                  color: Colors.amber.shade600,
+                  onTap: () => Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => const AlertSettingsScreen(),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 32),
               ],
             ),
           ],
@@ -717,117 +818,68 @@ class _DashboardScreenState extends State<DashboardScreen>
     return map[crop] ?? '🌱';
   }
 
-  // ── AI Tool Card ──
-  Widget _buildToolCard({
-    required IconData icon,
+  Widget _buildAiToolCard({
     required String title,
     required String subtitle,
+    required IconData icon,
     required Color color,
     required VoidCallback onTap,
   }) {
-    return Material(
-      color: Colors.transparent,
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(20),
-        child: Container(
-          padding: const EdgeInsets.all(20),
-          decoration: BoxDecoration(
-            color: _cardBg,
-            borderRadius: BorderRadius.circular(20),
-            border: Border.all(color: color.withValues(alpha: 0.3)),
-          ),
-          child: Row(
-            children: [
-              Container(
-                padding: const EdgeInsets.all(12),
-                decoration: BoxDecoration(
-                  color: color.withValues(alpha: 0.15),
-                  borderRadius: BorderRadius.circular(14),
-                ),
-                child: Icon(icon, color: color, size: 28),
-              ),
-              const SizedBox(width: 16),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      title,
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      subtitle,
-                      style: TextStyle(
-                        color: Colors.white.withValues(alpha: 0.6),
-                        fontSize: 13,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              Icon(
-                Icons.arrow_forward_ios_rounded,
-                color: Colors.white.withValues(alpha: 0.4),
-                size: 18,
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  // ── Find Schemes CTA ──
-  Widget _buildFindSchemesCTA(AppLocalizations l) {
     return Container(
-      width: double.infinity,
       decoration: BoxDecoration(
-        gradient: const LinearGradient(
-          colors: [Color(0xFF2E7D32), Color(0xFF43A047)],
-        ),
+        color: _cardBg,
         borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: color.withValues(alpha: 0.2)),
         boxShadow: [
           BoxShadow(
-            color: _accentGreen.withValues(alpha: 0.3),
-            blurRadius: 16,
-            offset: const Offset(0, 6),
+            color: color.withValues(alpha: 0.05),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
           ),
         ],
       ),
       child: Material(
         color: Colors.transparent,
         child: InkWell(
+          onTap: onTap,
           borderRadius: BorderRadius.circular(20),
-          onTap: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (_) => const FarmerInputScreen()),
-            );
-          },
           child: Padding(
-            padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 24),
+            padding: const EdgeInsets.all(20),
             child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                const Icon(Icons.search_rounded, color: Colors.white, size: 24),
-                const SizedBox(width: 12),
-                Text(
-                  l.findSchemes,
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                    letterSpacing: 0.5,
+                Container(
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: color.withValues(alpha: 0.1),
+                    borderRadius: BorderRadius.circular(15),
+                  ),
+                  child: Icon(icon, color: color, size: 32),
+                ),
+                const SizedBox(width: 20),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        title,
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        subtitle,
+                        style: const TextStyle(
+                          color: Colors.white54,
+                          fontSize: 13,
+                        ),
+                      ),
+                    ],
                   ),
                 ),
-                const SizedBox(width: 8),
-                const Icon(Icons.arrow_forward_rounded, color: Colors.white70),
+                const Icon(Icons.chevron_right_rounded, color: Colors.white24),
               ],
             ),
           ),

@@ -355,7 +355,7 @@ def seed_database():
                 ],
                 "official_link": "https://www.tn.gov.in/scheme",
                 "description": {
-                    "en": "State supplementary crop insurance scheme providing additional coverage on top of PMFBY for Tamil Nadu farmers growing rice, paddy, sugarcane and cotton.",
+                    "en": "State supplementary crop insurance scheme providing additional coverage on top of PMFBY for Tamil Nadu farmers growing rice, sugarcane and cotton.",
                     "hi": "तमिलनाडु राज्य पूरक फसल बीमा योजना।",
                     "ta": "தமிழ்நாடு அரசின் கூடுதல் பயிர் காப்பீட்டுத் திட்டம் - PMFBY மேல் கூடுதல் காப்பீடு.",
                     "ml": "തമിഴ്‌നാട് സംസ്ഥാന അധിക വിള ഇൻഷുറൻസ് പദ്ധതി.",
@@ -884,7 +884,7 @@ def seed_database():
                 "benefit": "100% premium paid by state",
                 "benefit_amount": 0,
                 "states": ["West Bengal"],
-                "crops": ["Paddy", "Wheat"],
+                "crops": ["Rice", "Wheat"],
                 "min_land": 0,
                 "max_land": 100,
                 "season": "All",
@@ -894,7 +894,7 @@ def seed_database():
                 ],
                 "official_link": "https://banglashasyabima.net",
                 "description": {
-                    "en": "West Bengal's Banglar Shasya Bima provides 100% state-funded crop insurance for paddy and wheat farmers, with no premium payable by farmers.",
+                    "en": "West Bengal's Banglar Shasya Bima provides 100% state-funded crop insurance for rice and wheat farmers, with no premium payable by farmers.",
                     "hi": "पश्चिम बंगाल में धान और गेहूं के लिए 100% राज्य-वित्त पोषित फसल बीमा।",
                     "ta": "மேற்கு வங்கத்தில் நெல், கோதுமைக்கு 100% மாநில நிதியுதவி பயிர் காப்பீடு.",
                     "ml": "പശ്ചിമ ബംഗാളിൽ നെല്ല്, ഗോതമ്പ് കർഷകർക്ക് 100% സംസ്ഥാന ധനസഹായത്തോടെയുള്ള വിള ഇൻഷുറൻസ്.",
