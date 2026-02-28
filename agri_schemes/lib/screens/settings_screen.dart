@@ -274,7 +274,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 ),
                 Switch.adaptive(
                   value: isDark,
-                  activeColor: _accentGreen,
+                  activeThumbColor: _accentGreen,
                   onChanged: (_) => themeService.toggleTheme(),
                 ),
               ],
@@ -501,7 +501,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
     required ValueChanged<String?> onChanged,
   }) {
     return DropdownButtonFormField<String>(
-      value: value.isEmpty ? null : value,
+      initialValue: value.isEmpty ? null : value,
       decoration: InputDecoration(
         labelText: label,
         labelStyle: TextStyle(color: textColor.withValues(alpha: 0.7)),

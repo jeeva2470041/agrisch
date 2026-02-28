@@ -1,4 +1,4 @@
-/// Models for crop calendar with growth phases and tasks.
+// Models for crop calendar with growth phases and tasks.
 
 class CropCalendarModel {
   final String crop;

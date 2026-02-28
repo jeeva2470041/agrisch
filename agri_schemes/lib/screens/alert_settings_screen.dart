@@ -118,7 +118,7 @@ class _AlertSettingsScreenState extends State<AlertSettingsScreen>
 
   @override
   Widget build(BuildContext context) {
-    final l = AppLocalizations.of(context)!;
+    final l = AppLocalizations.of(context);
     return Scaffold(
       backgroundColor: _darkBg,
       appBar: AppBar(
@@ -180,7 +180,7 @@ class _AlertSettingsScreenState extends State<AlertSettingsScreen>
               ),
               Switch(
                 value: profile.weatherAlertsEnabled,
-                activeColor: _accentGreen,
+                activeThumbColor: _accentGreen,
                 onChanged: (v) => profile.setWeatherAlertsEnabled(v),
               ),
             ],
@@ -407,7 +407,7 @@ class _AlertSettingsScreenState extends State<AlertSettingsScreen>
               ),
               Switch(
                 value: profile.priceAlertsEnabled,
-                activeColor: _accentGreen,
+                activeThumbColor: _accentGreen,
                 onChanged: (v) => profile.setPriceAlertsEnabled(v),
               ),
             ],

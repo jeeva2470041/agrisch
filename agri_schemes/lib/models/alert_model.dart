@@ -1,4 +1,4 @@
-/// Models for smart alerts (weather + price).
+// Models for smart alerts (weather + price).
 
 class WeatherAlert {
   final String type;

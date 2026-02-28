@@ -129,7 +129,7 @@ class _CropRecommendationScreenState extends State<CropRecommendationScreen> {
     final profile =
         Provider.of<FarmerProfileService>(context, listen: false);
     final langCode =
-        AppLocalizations.of(context)?.locale.languageCode ?? 'en';
+        AppLocalizations.of(context).locale.languageCode;
 
     final resp = await _api.recommendCrop(
       state: _state,
@@ -155,7 +155,7 @@ class _CropRecommendationScreenState extends State<CropRecommendationScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final l = AppLocalizations.of(context)!;
+    final l = AppLocalizations.of(context);
     return Scaffold(
       backgroundColor: _darkBg,
       appBar: AppBar(
@@ -549,7 +549,7 @@ class _CropRecommendationScreenState extends State<CropRecommendationScreen> {
   Widget _buildDropdownField(String label, List<String> items, String value,
       ValueChanged<String?> onChanged) {
     return DropdownButtonFormField<String>(
-      value: value.isEmpty ? null : value,
+      initialValue: value.isEmpty ? null : value,
       dropdownColor: _cardBg,
       style: const TextStyle(color: Colors.white),
       decoration: InputDecoration(

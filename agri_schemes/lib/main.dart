@@ -66,7 +66,6 @@ class AgriSchemesApp extends StatelessWidget {
     // Watch language service for locale changes
     final languageService = Provider.of<LanguageService>(context);
     final themeService = Provider.of<ThemeService>(context);
-    final isDark = themeService.isDarkMode;
 
     return MaterialApp(
       // App title (shown in app switcher)

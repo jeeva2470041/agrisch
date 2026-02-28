@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
@@ -22,7 +21,6 @@ class _SoilAnalysisScreenState extends State<SoilAnalysisScreen>
   late TabController _tabCtrl;
 
   // Photo mode
-  XFile? _pickedImage;
   Uint8List? _imageBytes;
   bool _analyzing = false;
   SoilAnalysisModel? _result;
@@ -77,7 +75,6 @@ class _SoilAnalysisScreenState extends State<SoilAnalysisScreen>
       if (file != null) {
         final bytes = await file.readAsBytes();
         setState(() {
-          _pickedImage = file;
           _imageBytes = bytes;
           _result = null;
           _error = null;
@@ -97,7 +94,7 @@ class _SoilAnalysisScreenState extends State<SoilAnalysisScreen>
 
     final b64 = base64Encode(_imageBytes!);
     final langCode =
-        AppLocalizations.of(context)?.locale.languageCode ?? 'en';
+        AppLocalizations.of(context).locale.languageCode;
     final resp = await _api.analyzeSoilPhoto(imageBase64: b64, language: langCode);
 
     setState(() {
@@ -136,7 +133,7 @@ class _SoilAnalysisScreenState extends State<SoilAnalysisScreen>
     }
 
     final langCode =
-        AppLocalizations.of(context)?.locale.languageCode ?? 'en';
+        AppLocalizations.of(context).locale.languageCode;
     final resp =
         await _api.analyzeSoilManual(soilData: soilData, language: langCode);
 
@@ -152,7 +149,7 @@ class _SoilAnalysisScreenState extends State<SoilAnalysisScreen>
 
   @override
   Widget build(BuildContext context) {
-    final l = AppLocalizations.of(context)!;
+    final l = AppLocalizations.of(context);
     return Scaffold(
       backgroundColor: _darkBg,
       appBar: AppBar(
@@ -584,7 +581,7 @@ class _SoilAnalysisScreenState extends State<SoilAnalysisScreen>
   Widget _buildDropdown(String label, List<String> items, String value,
       ValueChanged<String?> onChanged) {
     return DropdownButtonFormField<String>(
-      value: value.isEmpty ? null : value,
+      initialValue: value.isEmpty ? null : value,
       dropdownColor: _cardBg,
       style: const TextStyle(color: Colors.white),
       decoration: InputDecoration(

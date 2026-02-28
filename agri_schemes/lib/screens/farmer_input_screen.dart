@@ -66,7 +66,6 @@ class _FarmerInputScreenState extends State<FarmerInputScreen>
   /// Start voice-first NLP input: Listen via STT until user taps Stop
   Future<void> _startVoiceNlpInput() async {
     final stt = Provider.of<SttService>(context, listen: false);
-    final l = AppLocalizations.of(context);
 
     if (_isVoiceProcessing) return;
 

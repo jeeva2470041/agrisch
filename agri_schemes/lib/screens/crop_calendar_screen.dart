@@ -122,7 +122,7 @@ class _CropCalendarScreenState extends State<CropCalendarScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final l = AppLocalizations.of(context)!;
+    final l = AppLocalizations.of(context);
     return Scaffold(
       backgroundColor: _darkBg,
       appBar: AppBar(
@@ -551,7 +551,7 @@ class _CropCalendarScreenState extends State<CropCalendarScreen> {
   Widget _buildDropdown(String label, List<String> items, String value,
       ValueChanged<String?> onChanged) {
     return DropdownButtonFormField<String>(
-      value: value.isEmpty ? null : value,
+      initialValue: value.isEmpty ? null : value,
       dropdownColor: _cardBg,
       style: const TextStyle(color: Colors.white),
       decoration: InputDecoration(

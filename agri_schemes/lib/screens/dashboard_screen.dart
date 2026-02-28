@@ -886,59 +886,6 @@ class _DashboardScreenState extends State<DashboardScreen>
     );
   }
 
-  // ── Find Schemes CTA ──
-  Widget _buildFindSchemesCTA(AppLocalizations l) {
-    return Container(
-      width: double.infinity,
-      decoration: BoxDecoration(
-        gradient: const LinearGradient(
-          colors: [Color(0xFF2E7D32), Color(0xFF43A047)],
-        ),
-        borderRadius: BorderRadius.circular(20),
-        boxShadow: [
-          BoxShadow(
-            color: _accentGreen.withValues(alpha: 0.3),
-            blurRadius: 16,
-            offset: const Offset(0, 6),
-          ),
-        ],
-      ),
-      child: Material(
-        color: Colors.transparent,
-        child: InkWell(
-          borderRadius: BorderRadius.circular(20),
-          onTap: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (_) => const FarmerInputScreen()),
-            );
-          },
-          child: Padding(
-            padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 24),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                const Icon(Icons.search_rounded, color: Colors.white, size: 24),
-                const SizedBox(width: 12),
-                Text(
-                  l.findSchemes,
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                    letterSpacing: 0.5,
-                  ),
-                ),
-                const SizedBox(width: 8),
-                const Icon(Icons.arrow_forward_rounded, color: Colors.white70),
-              ],
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-
   // ── Helper Widgets ──
   Widget _shimmerCard({required double height}) {
     return Container(
