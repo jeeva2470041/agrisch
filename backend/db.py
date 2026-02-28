@@ -40,6 +40,16 @@ def get_schemes_collection():
     return get_db()["schemes"]
 
 
+def get_farmers_collection():
+    """Returns the farmers collection (for alerts & profiles)."""
+    return get_db()["farmers"]
+
+
+def get_calendar_tasks_collection():
+    """Returns the calendar task completion tracking collection."""
+    return get_db()["calendar_tasks"]
+
+
 # ---------------------------------------------------------------------------
 # Indexes
 # ---------------------------------------------------------------------------
@@ -64,5 +74,14 @@ def init_indexes():
     schemes.create_index([("season", ASCENDING)])
     schemes.create_index([("type", ASCENDING)])
     schemes.create_index([("benefit_amount", -1)])
+
+    # Farmers collection indexes
+    farmers = get_farmers_collection()
+    farmers.create_index([("device_id", ASCENDING)], unique=True)
+    farmers.create_index([("state", ASCENDING)])
+
+    # Calendar tasks indexes
+    cal_tasks = get_calendar_tasks_collection()
+    cal_tasks.create_index([("device_id", ASCENDING), ("task_key", ASCENDING)], unique=True)
 
     print("[OK] MongoDB indexes initialized.")

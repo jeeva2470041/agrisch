@@ -7,6 +7,8 @@ import 'scheme_detail_screen.dart';
 import 'ask_ai_screen.dart';
 import '../services/scheme_matching_service.dart';
 import '../services/tts_service.dart';
+import 'dashboard_screen.dart';
+import 'settings_screen.dart';
 
 /// Scheme Recommendation Screen
 /// Displays eligible schemes based on farmer input with visual type differentiation
@@ -219,6 +221,62 @@ class _SchemeRecommendationScreenState
               tooltip: localizations.stopSpeaking,
             ),
         ],
+      ),
+      bottomNavigationBar: Container(
+        decoration: BoxDecoration(
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.3),
+              blurRadius: 10,
+              offset: const Offset(0, -2),
+            ),
+          ],
+        ),
+        child: BottomNavigationBar(
+          currentIndex: 0, // Home/Schemes section
+          onTap: (index) {
+            if (index == 4) {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => const SettingsScreen()),
+              );
+            } else if (index != 0) {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => DashboardScreen(initialTab: index - 1),
+                ),
+              );
+            }
+          },
+          backgroundColor: const Color(0xFF122214),
+          selectedItemColor: const Color(0xFF43A047),
+          unselectedItemColor: Colors.white54,
+          type: BottomNavigationBarType.fixed,
+          items: [
+            BottomNavigationBarItem(
+              icon: const Icon(Icons.search_rounded),
+              label: localizations.findSchemes,
+            ),
+            BottomNavigationBarItem(
+              icon: const Icon(Icons.cloud_outlined),
+              label: localizations.weather,
+            ),
+            BottomNavigationBarItem(
+              icon: const Icon(Icons.storefront_outlined),
+              label: localizations.marketPrices,
+            ),
+            BottomNavigationBarItem(
+              icon: const Icon(Icons.auto_awesome_outlined),
+              label: localizations.translate('aiTools'),
+            ),
+            BottomNavigationBarItem(
+              icon: const Icon(Icons.settings_outlined),
+              activeIcon: const Icon(Icons.settings),
+              label: localizations.translate('settings'),
+            ),
+          ],
+        ),
       ),
       body: Container(
         decoration: const BoxDecoration(
@@ -749,26 +807,33 @@ class _SchemeRecommendationScreenState
 
   /// Small info chip for states, season, land size
   Widget _infoChip(IconData icon, String text, Color color) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-      decoration: BoxDecoration(
-        color: color.withValues(alpha: 0.08),
-        borderRadius: BorderRadius.circular(8),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(icon, size: 12, color: color),
-          const SizedBox(width: 4),
-          Text(
-            text,
-            style: TextStyle(
-              fontSize: 11,
-              fontWeight: FontWeight.w500,
-              color: color.shade700,
+    return ConstrainedBox(
+      constraints: BoxConstraints(maxWidth: MediaQuery.of(context).size.width * 0.7),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+        decoration: BoxDecoration(
+          color: color.withValues(alpha: 0.08),
+          borderRadius: BorderRadius.circular(8),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(icon, size: 12, color: color),
+            const SizedBox(width: 4),
+            Flexible(
+              child: Text(
+                text,
+                style: TextStyle(
+                  fontSize: 11,
+                  fontWeight: FontWeight.w500,
+                  color: color.shade700,
+                ),
+                overflow: TextOverflow.ellipsis,
+                maxLines: 2,
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

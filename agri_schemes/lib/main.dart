@@ -7,6 +7,8 @@ import 'l10n/app_localizations.dart';
 import 'services/language_service.dart';
 import 'services/tts_service.dart';
 import 'services/stt_service.dart';
+import 'services/farmer_profile_service.dart';
+import 'services/theme_service.dart';
 import 'screens/landing_screen.dart';
 
 /// Main entry point for the AgriSchemes application
@@ -20,11 +22,15 @@ void main() async {
   final languageService = LanguageService();
   final ttsService = TtsService();
   final sttService = SttService();
+  final farmerProfileService = FarmerProfileService();
+  final themeService = ThemeService();
 
   // Load saved language preference and initialize TTS + STT
   await languageService.init();
   await ttsService.init();
   await sttService.init();
+  await farmerProfileService.init();
+  await themeService.init();
 
   // Set TTS/STT language to match saved preference
   await ttsService.setLanguage(languageService.ttsLanguageCode);
@@ -40,6 +46,10 @@ void main() async {
         ChangeNotifierProvider.value(value: ttsService),
         // STT service for voice input
         ChangeNotifierProvider.value(value: sttService),
+        // Farmer profile service for preferences & alerts
+        ChangeNotifierProvider.value(value: farmerProfileService),
+        // Theme service for dark/light mode
+        ChangeNotifierProvider.value(value: themeService),
       ],
       child: const AgriSchemesApp(),
     ),
@@ -55,6 +65,8 @@ class AgriSchemesApp extends StatelessWidget {
   Widget build(BuildContext context) {
     // Watch language service for locale changes
     final languageService = Provider.of<LanguageService>(context);
+    final themeService = Provider.of<ThemeService>(context);
+    final isDark = themeService.isDarkMode;
 
     return MaterialApp(
       // App title (shown in app switcher)
@@ -77,26 +89,22 @@ class AgriSchemesApp extends StatelessWidget {
         GlobalCupertinoLocalizations.delegate,
       ],
 
-      // App theme configuration
-      theme: ThemeData(
-        // Use Material 3 design
-        useMaterial3: true,
+      // Theme mode from service
+      themeMode: themeService.themeMode,
 
-        // Color scheme based on green (agriculture theme)
+      // Light theme
+      theme: ThemeData(
+        useMaterial3: true,
         colorScheme: ColorScheme.fromSeed(
           seedColor: const Color(0xFF2E7D32),
           brightness: Brightness.light,
         ),
-
-        // App bar theme
         appBarTheme: const AppBarTheme(
           backgroundColor: Color(0xFF2E7D32),
           foregroundColor: Colors.white,
           elevation: 0,
           centerTitle: true,
         ),
-
-        // Elevated button theme
         elevatedButtonTheme: ElevatedButtonThemeData(
           style: ElevatedButton.styleFrom(
             backgroundColor: const Color(0xFF2E7D32),
@@ -107,17 +115,51 @@ class AgriSchemesApp extends StatelessWidget {
             ),
           ),
         ),
-
-        // Input decoration theme
         inputDecorationTheme: InputDecorationTheme(
           border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
           filled: true,
           fillColor: Colors.grey.shade50,
         ),
-
-        // Card theme
         cardTheme: CardThemeData(
           elevation: 2,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
+        ),
+      ),
+
+      // Dark theme
+      darkTheme: ThemeData(
+        useMaterial3: true,
+        colorScheme: ColorScheme.fromSeed(
+          seedColor: const Color(0xFF2E7D32),
+          brightness: Brightness.dark,
+        ),
+        scaffoldBackgroundColor: const Color(0xFF0D1B0F),
+        appBarTheme: const AppBarTheme(
+          backgroundColor: Color(0xFF1B5E20),
+          foregroundColor: Colors.white,
+          elevation: 0,
+          centerTitle: true,
+        ),
+        elevatedButtonTheme: ElevatedButtonThemeData(
+          style: ElevatedButton.styleFrom(
+            backgroundColor: const Color(0xFF43A047),
+            foregroundColor: Colors.white,
+            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
+            ),
+          ),
+        ),
+        inputDecorationTheme: InputDecorationTheme(
+          border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+          filled: true,
+          fillColor: const Color(0xFF162418),
+        ),
+        cardTheme: CardThemeData(
+          elevation: 2,
+          color: const Color(0xFF162418),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(16),
           ),

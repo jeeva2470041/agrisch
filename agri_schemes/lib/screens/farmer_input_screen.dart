@@ -7,8 +7,10 @@ import '../data/constants.dart';
 import '../models/farmer_input_model.dart';
 import '../services/stt_service.dart';
 import '../services/api_service.dart';
+import '../services/farmer_profile_service.dart';
 import 'scheme_recommendation_screen.dart';
 import 'dashboard_screen.dart';
+import 'settings_screen.dart';
 
 /// Farmer Input Screen — Premium UI with searchable state picker
 /// Collects: Crop type, Land size, Season, State/UT
@@ -83,9 +85,12 @@ class _FarmerInputScreenState extends State<FarmerInputScreen>
     if (!started) {
       setState(() => _isVoiceListening = false);
       if (mounted) {
-        _showSnackbar(stt.errorMessage.isNotEmpty
-            ? stt.errorMessage
-            : 'Microphone not available', isError: true);
+        _showSnackbar(
+          stt.errorMessage.isNotEmpty
+              ? stt.errorMessage
+              : 'Microphone not available',
+          isError: true,
+        );
       }
       return;
     }
@@ -144,7 +149,9 @@ class _FarmerInputScreenState extends State<FarmerInputScreen>
     }
 
     if (filled > 0) {
-      _showSnackbar('${l.translate('voiceSuccess')} ($filled/4 ${l.translate('voiceFieldsFilled')})');
+      _showSnackbar(
+        '${l.translate('voiceSuccess')} ($filled/4 ${l.translate('voiceFieldsFilled')})',
+      );
     } else {
       _showSnackbar(l.translate('voiceNoFields'), isError: true);
     }
@@ -169,6 +176,16 @@ class _FarmerInputScreenState extends State<FarmerInputScreen>
         state: _selectedState!,
       );
 
+      // Save to farmer profile for pre-populating new feature screens
+      final profile =
+          Provider.of<FarmerProfileService>(context, listen: false);
+      profile.updateProfile(
+        state: _selectedState!,
+        crop: _selectedCrop!,
+        season: _selectedSeason!,
+        landSize: _landSize,
+      );
+
       Navigator.push(
         context,
         PageRouteBuilder(
@@ -186,39 +203,6 @@ class _FarmerInputScreenState extends State<FarmerInputScreen>
         ),
       );
     }
-  }
-
-  Widget _buildAppBarIcon({
-    required IconData icon,
-    required String label,
-    required VoidCallback onTap,
-  }) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-        decoration: BoxDecoration(
-          color: Colors.white.withValues(alpha: 0.15),
-          borderRadius: BorderRadius.circular(20),
-          border: Border.all(color: Colors.white30),
-        ),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(icon, color: Colors.white, size: 18),
-            const SizedBox(width: 4),
-            Text(
-              label,
-              style: const TextStyle(
-                color: Colors.white,
-                fontSize: 11,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
   }
 
   void _showSnackbar(String message, {bool isError = false}) {
@@ -340,6 +324,62 @@ class _FarmerInputScreenState extends State<FarmerInputScreen>
     final l = AppLocalizations.of(context);
 
     return Scaffold(
+      bottomNavigationBar: Container(
+        decoration: BoxDecoration(
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.3),
+              blurRadius: 10,
+              offset: const Offset(0, -2),
+            ),
+          ],
+        ),
+        child: BottomNavigationBar(
+          currentIndex: 0, // Home is index 0
+          onTap: (index) {
+            if (index == 4) {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => const SettingsScreen()),
+              );
+            } else if (index != 0) {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => DashboardScreen(initialTab: index - 1),
+                ),
+              );
+            }
+          },
+          backgroundColor: const Color(0xFF122214),
+          selectedItemColor: _accentGreen,
+          unselectedItemColor: Colors.white54,
+          type: BottomNavigationBarType.fixed,
+          items: [
+            BottomNavigationBarItem(
+              icon: const Icon(Icons.search_rounded),
+              label: l.findSchemes,
+            ),
+            BottomNavigationBarItem(
+              icon: const Icon(Icons.cloud_outlined),
+              label: l.weather,
+            ),
+            BottomNavigationBarItem(
+              icon: const Icon(Icons.storefront_outlined),
+              label: l.marketPrices,
+            ),
+            BottomNavigationBarItem(
+              icon: const Icon(Icons.auto_awesome_outlined),
+              label: l.translate('aiTools'),
+            ),
+            BottomNavigationBarItem(
+              icon: const Icon(Icons.settings_outlined),
+              activeIcon: const Icon(Icons.settings),
+              label: l.translate('settings'),
+            ),
+          ],
+        ),
+      ),
       body: Container(
         decoration: const BoxDecoration(
           gradient: LinearGradient(
@@ -361,34 +401,13 @@ class _FarmerInputScreenState extends State<FarmerInputScreen>
                   backgroundColor: Colors.transparent,
                   elevation: 0,
                   actions: [
-                    _buildAppBarIcon(
-                      icon: Icons.wb_sunny_outlined,
-                      label: 'Weather',
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (_) =>
-                                const DashboardScreen(initialTab: 0),
-                          ),
-                        );
+                    IconButton(
+                      icon: const Icon(Icons.refresh_rounded),
+                      onPressed: () {
+                        // Refresh logic if needed
                       },
                     ),
-                    const SizedBox(width: 6),
-                    _buildAppBarIcon(
-                      icon: Icons.currency_rupee_outlined,
-                      label: 'Prices',
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (_) =>
-                                const DashboardScreen(initialTab: 1),
-                          ),
-                        );
-                      },
-                    ),
-                    const SizedBox(width: 12),
+                    const SizedBox(width: 8),
                   ],
                   flexibleSpace: FlexibleSpaceBar(
                     centerTitle: true,
@@ -971,8 +990,8 @@ class _FarmerInputScreenState extends State<FarmerInputScreen>
       onTap: _isVoiceProcessing
           ? null
           : _isVoiceListening
-              ? _stopVoiceAndProcess
-              : _startVoiceNlpInput,
+          ? _stopVoiceAndProcess
+          : _startVoiceNlpInput,
       borderRadius: BorderRadius.circular(16),
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 300),
@@ -982,16 +1001,14 @@ class _FarmerInputScreenState extends State<FarmerInputScreen>
             colors: _isVoiceListening
                 ? [Colors.red.shade400, Colors.red.shade600]
                 : _isVoiceProcessing
-                    ? [Colors.orange.shade400, Colors.orange.shade600]
-                    : [const Color(0xFF7C4DFF), const Color(0xFF651FFF)],
+                ? [Colors.orange.shade400, Colors.orange.shade600]
+                : [const Color(0xFF7C4DFF), const Color(0xFF651FFF)],
           ),
           borderRadius: BorderRadius.circular(16),
           boxShadow: isActive
               ? [
                   BoxShadow(
-                    color: (_isVoiceListening
-                            ? Colors.red
-                            : Colors.deepPurple)
+                    color: (_isVoiceListening ? Colors.red : Colors.deepPurple)
                         .withValues(alpha: 0.4),
                     blurRadius: 16,
                     spreadRadius: 2,
@@ -1019,9 +1036,7 @@ class _FarmerInputScreenState extends State<FarmerInputScreen>
               )
             else
               Icon(
-                _isVoiceListening
-                    ? Icons.stop_rounded
-                    : Icons.mic_none_rounded,
+                _isVoiceListening ? Icons.stop_rounded : Icons.mic_none_rounded,
                 color: Colors.white,
                 size: 24,
               ),
@@ -1034,8 +1049,8 @@ class _FarmerInputScreenState extends State<FarmerInputScreen>
                     _isVoiceListening
                         ? l.translate('voiceListening')
                         : _isVoiceProcessing
-                            ? l.translate('voiceProcessing')
-                            : l.translate('voiceInputTitle'),
+                        ? l.translate('voiceProcessing')
+                        : l.translate('voiceInputTitle'),
                     style: const TextStyle(
                       color: Colors.white,
                       fontSize: 15,
@@ -1046,8 +1061,8 @@ class _FarmerInputScreenState extends State<FarmerInputScreen>
                   Text(
                     _isVoiceListening
                         ? (_voiceTranscript.isNotEmpty
-                            ? _voiceTranscript
-                            : l.translate('voiceInputSubtitle'))
+                              ? _voiceTranscript
+                              : l.translate('voiceInputSubtitle'))
                         : l.translate('voiceInputSubtitle'),
                     style: TextStyle(
                       color: Colors.white.withValues(alpha: 0.8),

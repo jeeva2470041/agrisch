@@ -47,25 +47,47 @@ class _DiseaseDetectionScreenState extends State<DiseaseDetectionScreen> {
     }
   }
 
+  String? _errorMsg;
+
   Future<void> _analyzeImage() async {
     if (_imageBytes == null) return;
 
-    setState(() => _isAnalyzing = true);
+    setState(() {
+      _isAnalyzing = true;
+      _errorMsg = null;
+      _result = null;
+    });
 
     final l = AppLocalizations.of(context);
     final langCode = l.locale.languageCode;
     final base64Image = base64Encode(_imageBytes!);
 
-    final result = await _api.detectDisease(
-      imageBase64: base64Image,
-      language: langCode,
-    );
+    try {
+      final result = await _api.detectDisease(
+        imageBase64: base64Image,
+        language: langCode,
+      );
 
-    if (mounted) {
-      setState(() {
-        _isAnalyzing = false;
-        _result = result;
-      });
+      if (mounted) {
+        if (result.containsKey('error')) {
+          setState(() {
+            _isAnalyzing = false;
+            _errorMsg = result['error']?.toString() ?? 'Analysis failed';
+          });
+        } else {
+          setState(() {
+            _isAnalyzing = false;
+            _result = result;
+          });
+        }
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() {
+          _isAnalyzing = false;
+          _errorMsg = 'Failed to analyze image. Please try again.';
+        });
+      }
     }
   }
 
@@ -94,6 +116,9 @@ class _DiseaseDetectionScreenState extends State<DiseaseDetectionScreen> {
             // Action buttons
             _buildActionButtons(l),
             const SizedBox(height: 24),
+
+            // Error message
+            if (_errorMsg != null && !_isAnalyzing) _buildErrorCard(_errorMsg!),
 
             // Results
             if (_isAnalyzing) _buildLoadingCard(l),
@@ -205,6 +230,55 @@ class _DiseaseDetectionScreenState extends State<DiseaseDetectionScreen> {
           ),
         ],
       ],
+    );
+  }
+
+  Widget _buildErrorCard(String message) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: _cardBg,
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: Colors.red.withValues(alpha: 0.5), width: 2),
+      ),
+      child: Column(
+        children: [
+          const Icon(Icons.error_outline_rounded, color: Colors.red, size: 40),
+          const SizedBox(height: 12),
+          Text(
+            'Analysis Failed',
+            style: const TextStyle(
+              color: Colors.red,
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            message,
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              color: Colors.white.withValues(alpha: 0.7),
+              fontSize: 14,
+              height: 1.4,
+            ),
+          ),
+          const SizedBox(height: 16),
+          ElevatedButton.icon(
+            onPressed: _analyzeImage,
+            icon: const Icon(Icons.refresh_rounded),
+            label: const Text('Try Again'),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: _accentGreen,
+              foregroundColor: Colors.white,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 

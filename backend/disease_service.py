@@ -127,7 +127,14 @@ If the image is not a plant or is unclear, still return the JSON with is_healthy
             return {"error": "No response from AI model."}
 
         parts = candidates[0].get("content", {}).get("parts", [])
-        raw_text = parts[0].get("text", "") if parts else ""
+        # Gemini 2.5 Flash may return "thought" parts before actual text.
+        raw_text = ""
+        for part in reversed(parts):
+            if part.get("thought"):
+                continue
+            if part.get("text", "").strip():
+                raw_text = part["text"]
+                break
 
         if not raw_text:
             return {"error": "Empty response from AI model."}

@@ -15,6 +15,10 @@ from ranking_service import rank_schemes
 from forecast_service import get_price_forecast
 from disease_service import detect_disease
 from yield_service import predict_yield
+from soil_service import analyze_soil_image, analyze_soil_manual
+from crop_recommender_service import recommend_crops
+from alert_service import check_weather_alerts, check_price_alerts
+from calendar_service import get_crop_calendar
 
 api_bp = Blueprint("api", __name__)
 
@@ -525,3 +529,212 @@ def predict_yield_endpoint():
     except Exception as exc:
         return jsonify({"error": f"Internal server error: {exc}"}), 500
 
+
+# ---------------------------------------------------------------------------
+# POST /api/analyze-soil  —  Soil Health Analysis (Gemini Vision / Manual)
+# ---------------------------------------------------------------------------
+@api_bp.route("/analyze-soil", methods=["POST"])
+def analyze_soil_endpoint():
+    """Analyze soil from an image or manual test values.
+
+    Expects JSON body:
+        mode        (str, required) — 'photo' or 'manual'
+        image       (str, optional) — base64-encoded soil image (for photo mode)
+        soil_data   (dict, optional) — {ph, nitrogen, phosphorus, potassium,
+                                        organic_carbon, soil_type} (for manual mode)
+        language    (str, optional) — locale code, default en
+    """
+    try:
+        data = request.get_json(silent=True)
+        if not data or not isinstance(data, dict):
+            return jsonify({"error": "Request body must be a JSON object"}), 400
+
+        mode = (data.get("mode") or "photo").strip().lower()
+        language = (data.get("language") or "en").strip()
+
+        if mode == "photo":
+            image_b64 = (data.get("image") or "").strip()
+            if not image_b64:
+                return jsonify({"error": "image is required for photo mode"}), 400
+            if len(image_b64) > 6_000_000:
+                return jsonify({"error": "Image too large. Maximum 4MB."}), 400
+
+            result = analyze_soil_image(image_b64, language)
+
+        elif mode == "manual":
+            soil_data = data.get("soil_data")
+            if not soil_data or not isinstance(soil_data, dict):
+                return jsonify({"error": "soil_data dict is required for manual mode"}), 400
+
+            for field in ["ph", "nitrogen", "phosphorus", "potassium", "organic_carbon"]:
+                if field in soil_data:
+                    try:
+                        soil_data[field] = float(soil_data[field])
+                    except (ValueError, TypeError):
+                        return jsonify({"error": f"{field} must be a number"}), 400
+
+            result = analyze_soil_manual(soil_data, language)
+        else:
+            return jsonify({"error": "mode must be 'photo' or 'manual'"}), 400
+
+        if "error" in result:
+            return jsonify({"success": False, **result}), 400
+
+        return jsonify({"success": True, **result})
+
+    except Exception as exc:
+        return jsonify({"error": f"Internal server error: {exc}"}), 500
+
+
+# ---------------------------------------------------------------------------
+# POST /api/recommend-crop  —  AI Crop Recommendation
+# ---------------------------------------------------------------------------
+@api_bp.route("/recommend-crop", methods=["POST"])
+def recommend_crop_endpoint():
+    """Recommend top crops based on multi-factor analysis.
+
+    Expects JSON body:
+        state             (str, required)
+        season            (str, required)
+        soil_type         (str, optional)
+        ph                (float, optional)
+        water_availability (str, optional) — Low/Medium/High
+        land_size         (float, optional)
+        lat, lon          (float, optional)
+        language          (str, optional)
+    """
+    try:
+        data = request.get_json(silent=True)
+        if not data or not isinstance(data, dict):
+            return jsonify({"error": "Request body must be a JSON object"}), 400
+
+        state = (data.get("state") or "").strip()
+        season = (data.get("season") or "").strip()
+        if not state:
+            return jsonify({"error": "state is required"}), 400
+        if not season:
+            return jsonify({"error": "season is required"}), 400
+
+        kwargs = {
+            "state": state,
+            "season": season,
+            "soil_type": (data.get("soil_type") or "").strip(),
+            "water_availability": (data.get("water_availability") or "Medium").strip(),
+            "land_size": float(data.get("land_size", 1.0)),
+            "language": (data.get("language") or "en").strip(),
+        }
+
+        if data.get("ph") is not None:
+            kwargs["ph"] = float(data["ph"])
+        if data.get("lat") is not None and data.get("lon") is not None:
+            kwargs["lat"] = float(data["lat"])
+            kwargs["lon"] = float(data["lon"])
+
+        result = recommend_crops(**kwargs)
+
+        if "error" in result:
+            return jsonify({"success": False, **result}), 400
+
+        return jsonify({"success": True, **result})
+
+    except Exception as exc:
+        return jsonify({"error": f"Internal server error: {exc}"}), 500
+
+
+# ---------------------------------------------------------------------------
+# GET /api/weather-alerts  —  Smart Weather Alerts
+# ---------------------------------------------------------------------------
+@api_bp.route("/weather-alerts", methods=["GET"])
+def weather_alerts_endpoint():
+    """Check weather conditions for alert-worthy events.
+
+    Query params:
+        lat (float, required)
+        lon (float, required)
+    """
+    try:
+        lat = request.args.get("lat")
+        lon = request.args.get("lon")
+        if not lat or not lon:
+            return jsonify({"error": "lat and lon are required"}), 400
+
+        try:
+            lat = float(lat)
+            lon = float(lon)
+        except (ValueError, TypeError):
+            return jsonify({"error": "lat and lon must be valid numbers"}), 400
+
+        if not (-90 <= lat <= 90) or not (-180 <= lon <= 180):
+            return jsonify({"error": "Invalid lat/lon range"}), 400
+
+        result = check_weather_alerts(lat, lon)
+        return jsonify({"success": True, **result})
+
+    except Exception as exc:
+        return jsonify({"error": f"Internal server error: {exc}"}), 500
+
+
+# ---------------------------------------------------------------------------
+# POST /api/price-alerts  —  Smart Price Alerts
+# ---------------------------------------------------------------------------
+@api_bp.route("/price-alerts", methods=["POST"])
+def price_alerts_endpoint():
+    """Check if crop prices have crossed farmer-defined thresholds.
+
+    Expects JSON body:
+        state    (str, required)
+        triggers (list, required) — [{crop, threshold_price, direction}]
+    """
+    try:
+        data = request.get_json(silent=True)
+        if not data or not isinstance(data, dict):
+            return jsonify({"error": "Request body must be a JSON object"}), 400
+
+        state = (data.get("state") or "").strip()
+        triggers = data.get("triggers", [])
+
+        if not state:
+            return jsonify({"error": "state is required"}), 400
+        if not isinstance(triggers, list) or not triggers:
+            return jsonify({"error": "triggers list is required"}), 400
+
+        result = check_price_alerts(state, triggers)
+        return jsonify({"success": True, **result})
+
+    except Exception as exc:
+        return jsonify({"error": f"Internal server error: {exc}"}), 500
+
+
+# ---------------------------------------------------------------------------
+# GET /api/crop-calendar  —  Crop Calendar & Planner
+# ---------------------------------------------------------------------------
+@api_bp.route("/crop-calendar", methods=["GET"])
+def crop_calendar_endpoint():
+    """Get crop calendar with growth phases and tasks.
+
+    Query params:
+        crop        (str, required)
+        state       (str, optional)
+        season      (str, optional)
+        sowing_date (str, optional) — YYYY-MM-DD format
+    """
+    try:
+        crop = request.args.get("crop", "").strip()
+        if not crop:
+            return jsonify({"error": "crop is required"}), 400
+        if len(crop) > 50:
+            return jsonify({"error": "crop parameter too long"}), 400
+
+        state = request.args.get("state", "").strip()
+        season = request.args.get("season", "").strip()
+        sowing_date = request.args.get("sowing_date", "").strip() or None
+
+        result = get_crop_calendar(crop, state, season, sowing_date)
+
+        if "error" in result:
+            return jsonify({"success": False, **result}), 400
+
+        return jsonify({"success": True, **result})
+
+    except Exception as exc:
+        return jsonify({"error": f"Internal server error: {exc}"}), 500

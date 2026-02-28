@@ -93,7 +93,14 @@ def ask_ai(question: str, scheme_context: str, language: str = "en") -> dict:
             return {"error": "No response from AI model."}
 
         parts = candidates[0].get("content", {}).get("parts", [])
-        answer = parts[0].get("text", "") if parts else ""
+        # Gemini 2.5 Flash may return "thought" parts before actual text.
+        answer = ""
+        for part in reversed(parts):
+            if part.get("thought"):
+                continue
+            if part.get("text", "").strip():
+                answer = part["text"]
+                break
 
         if not answer:
             return {"error": "Empty response from AI model."}

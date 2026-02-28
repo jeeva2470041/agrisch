@@ -183,7 +183,7 @@ class ApiService {
   // ─────────────────────────────────────────────────
   // Disease Detection API
   // ─────────────────────────────────────────────────
-  Future<Map<String, dynamic>?> detectDisease({
+  Future<Map<String, dynamic>> detectDisease({
     required String imageBase64,
     String cropHint = '',
     String language = 'en',
@@ -199,17 +199,18 @@ class ApiService {
               'language': language,
             }),
           )
-          .timeout(const Duration(seconds: 30));
+          .timeout(const Duration(seconds: 60));
 
       final body = json.decode(response.body) as Map<String, dynamic>;
 
       if (response.statusCode == 200 && body['success'] == true) {
         return body;
       }
-      return null;
+      // Return error info so the UI can display it
+      return {'error': body['error'] ?? 'Disease detection failed (status ${response.statusCode})'};
     } catch (e) {
       debugPrint('Disease detection error: $e');
-      return null;
+      return {'error': 'Could not connect to AI service. Please check your network and try again.'};
     }
   }
 
@@ -246,6 +247,218 @@ class ApiService {
       return null;
     } catch (e) {
       debugPrint('Yield prediction error: $e');
+      return null;
+    }
+  }
+
+  // ─────────────────────────────────────────────────
+  // Soil Analysis API
+  // ─────────────────────────────────────────────────
+  Future<Map<String, dynamic>> analyzeSoilPhoto({
+    required String imageBase64,
+    String language = 'en',
+  }) async {
+    try {
+      final response = await http
+          .post(
+            Uri.parse('$baseUrl/api/analyze-soil'),
+            headers: {'Content-Type': 'application/json'},
+            body: json.encode({
+              'mode': 'photo',
+              'image': imageBase64,
+              'language': language,
+            }),
+          )
+          .timeout(const Duration(seconds: 60));
+
+      final body = json.decode(response.body) as Map<String, dynamic>;
+
+      if (response.statusCode == 200 && body['success'] == true) {
+        return body;
+      }
+      return {
+        'error': body['error'] ?? 'Soil analysis failed (status ${response.statusCode})'
+      };
+    } catch (e) {
+      debugPrint('Soil analysis (photo) error: $e');
+      return {
+        'error':
+            'Could not connect to AI service. Please check your network and try again.'
+      };
+    }
+  }
+
+  Future<Map<String, dynamic>> analyzeSoilManual({
+    required Map<String, dynamic> soilData,
+    String language = 'en',
+  }) async {
+    try {
+      final response = await http
+          .post(
+            Uri.parse('$baseUrl/api/analyze-soil'),
+            headers: {'Content-Type': 'application/json'},
+            body: json.encode({
+              'mode': 'manual',
+              'soil_data': soilData,
+              'language': language,
+            }),
+          )
+          .timeout(const Duration(seconds: 30));
+
+      final body = json.decode(response.body) as Map<String, dynamic>;
+
+      if (response.statusCode == 200 && body['success'] == true) {
+        return body;
+      }
+      return {
+        'error': body['error'] ?? 'Soil analysis failed (status ${response.statusCode})'
+      };
+    } catch (e) {
+      debugPrint('Soil analysis (manual) error: $e');
+      return {
+        'error':
+            'Could not connect to AI service. Please check your network and try again.'
+      };
+    }
+  }
+
+  // ─────────────────────────────────────────────────
+  // Crop Recommendation API
+  // ─────────────────────────────────────────────────
+  Future<Map<String, dynamic>> recommendCrop({
+    required String state,
+    required String season,
+    String soilType = '',
+    double? ph,
+    String waterAvailability = 'Medium',
+    double landSize = 1.0,
+    double? lat,
+    double? lon,
+    String language = 'en',
+  }) async {
+    try {
+      final Map<String, dynamic> payload = {
+        'state': state,
+        'season': season,
+        'soil_type': soilType,
+        'water_availability': waterAvailability,
+        'land_size': landSize,
+        'language': language,
+      };
+      if (ph != null) payload['ph'] = ph;
+      if (lat != null && lon != null) {
+        payload['lat'] = lat;
+        payload['lon'] = lon;
+      }
+
+      final response = await http
+          .post(
+            Uri.parse('$baseUrl/api/recommend-crop'),
+            headers: {'Content-Type': 'application/json'},
+            body: json.encode(payload),
+          )
+          .timeout(const Duration(seconds: 45));
+
+      final body = json.decode(response.body) as Map<String, dynamic>;
+
+      if (response.statusCode == 200 && body['success'] == true) {
+        return body;
+      }
+      return {
+        'error':
+            body['error'] ?? 'Crop recommendation failed (status ${response.statusCode})'
+      };
+    } catch (e) {
+      debugPrint('Crop recommendation error: $e');
+      return {
+        'error':
+            'Could not connect to AI service. Please check your network and try again.'
+      };
+    }
+  }
+
+  // ─────────────────────────────────────────────────
+  // Weather Alerts API
+  // ─────────────────────────────────────────────────
+  Future<Map<String, dynamic>?> getWeatherAlerts(
+      double lat, double lon) async {
+    try {
+      final response = await http
+          .get(
+            Uri.parse('$baseUrl/api/weather-alerts?lat=$lat&lon=$lon'),
+          )
+          .timeout(const Duration(seconds: 15));
+
+      if (response.statusCode == 200) {
+        final body = json.decode(response.body) as Map<String, dynamic>;
+        if (body['success'] == true) return body;
+      }
+      return null;
+    } catch (e) {
+      debugPrint('Weather alerts error: $e');
+      return null;
+    }
+  }
+
+  // ─────────────────────────────────────────────────
+  // Price Alerts API
+  // ─────────────────────────────────────────────────
+  Future<Map<String, dynamic>?> checkPriceAlerts({
+    required String state,
+    required List<Map<String, dynamic>> triggers,
+  }) async {
+    try {
+      final response = await http
+          .post(
+            Uri.parse('$baseUrl/api/price-alerts'),
+            headers: {'Content-Type': 'application/json'},
+            body: json.encode({
+              'state': state,
+              'triggers': triggers,
+            }),
+          )
+          .timeout(const Duration(seconds: 15));
+
+      if (response.statusCode == 200) {
+        final body = json.decode(response.body) as Map<String, dynamic>;
+        if (body['success'] == true) return body;
+      }
+      return null;
+    } catch (e) {
+      debugPrint('Price alerts error: $e');
+      return null;
+    }
+  }
+
+  // ─────────────────────────────────────────────────
+  // Crop Calendar API
+  // ─────────────────────────────────────────────────
+  Future<Map<String, dynamic>?> getCropCalendar({
+    required String crop,
+    String state = '',
+    String season = '',
+    String? sowingDate,
+  }) async {
+    try {
+      String url =
+          '$baseUrl/api/crop-calendar?crop=${Uri.encodeComponent(crop)}';
+      if (state.isNotEmpty) url += '&state=${Uri.encodeComponent(state)}';
+      if (season.isNotEmpty) url += '&season=${Uri.encodeComponent(season)}';
+      if (sowingDate != null && sowingDate.isNotEmpty) {
+        url += '&sowing_date=$sowingDate';
+      }
+
+      final response = await http
+          .get(Uri.parse(url))
+          .timeout(const Duration(seconds: 15));
+
+      if (response.statusCode == 200) {
+        final body = json.decode(response.body) as Map<String, dynamic>;
+        if (body['success'] == true) return body;
+      }
+      return null;
+    } catch (e) {
+      debugPrint('Crop calendar error: $e');
       return null;
     }
   }
