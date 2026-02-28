@@ -194,6 +194,13 @@ const Map<String, String> tamilTranslations = {
   'dashboard': 'டாஷ்போர்டு',
   'aiTools': 'AI கருவிகள்',
 
+  // Short nav-bar labels
+  'schemesNav': 'திட்டங்கள்',
+  'weatherNav': 'வானிலை',
+  'marketNav': 'சந்தை',
+  'aiToolsNav': 'AI',
+  'settingsNav': 'அமைப்பு',
+
   // Voice NLP
   'voiceInputTitle': 'குரல் உள்ளீடு',
   'voiceInputSubtitle': 'உங்கள் பண்ணை விவரங்களைப் பேசுங்கள்',

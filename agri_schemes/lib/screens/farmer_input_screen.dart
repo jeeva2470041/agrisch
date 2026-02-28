@@ -354,27 +354,29 @@ class _FarmerInputScreenState extends State<FarmerInputScreen>
           selectedItemColor: _accentGreen,
           unselectedItemColor: Colors.white54,
           type: BottomNavigationBarType.fixed,
+          selectedFontSize: 11,
+          unselectedFontSize: 10,
           items: [
             BottomNavigationBarItem(
               icon: const Icon(Icons.search_rounded),
-              label: l.findSchemes,
+              label: l.translate('schemesNav'),
             ),
             BottomNavigationBarItem(
               icon: const Icon(Icons.cloud_outlined),
-              label: l.weather,
+              label: l.translate('weatherNav'),
             ),
             BottomNavigationBarItem(
               icon: const Icon(Icons.storefront_outlined),
-              label: l.marketPrices,
+              label: l.translate('marketNav'),
             ),
             BottomNavigationBarItem(
               icon: const Icon(Icons.auto_awesome_outlined),
-              label: l.translate('aiTools'),
+              label: l.translate('aiToolsNav'),
             ),
             BottomNavigationBarItem(
               icon: const Icon(Icons.settings_outlined),
               activeIcon: const Icon(Icons.settings),
-              label: l.translate('settings'),
+              label: l.translate('settingsNav'),
             ),
           ],
         ),
@@ -625,13 +627,16 @@ class _FarmerInputScreenState extends State<FarmerInputScreen>
           child: Icon(icon, size: 18, color: _primaryGreen),
         ),
         const SizedBox(width: 10),
-        Text(
-          label,
-          style: const TextStyle(
-            fontSize: 15,
-            fontWeight: FontWeight.w600,
-            color: Color(0xFF2D3436),
-            letterSpacing: 0.3,
+        Flexible(
+          child: Text(
+            label,
+            style: const TextStyle(
+              fontSize: 15,
+              fontWeight: FontWeight.w600,
+              color: Color(0xFF2D3436),
+              letterSpacing: 0.3,
+            ),
+            overflow: TextOverflow.ellipsis,
           ),
         ),
       ],
@@ -1112,12 +1117,16 @@ class _FarmerInputScreenState extends State<FarmerInputScreen>
           children: [
             const Icon(Icons.search_rounded, size: 24),
             const SizedBox(width: 12),
-            Text(
-              l.findSchemes,
-              style: const TextStyle(
-                fontSize: 17,
-                fontWeight: FontWeight.w700,
-                letterSpacing: 0.5,
+            Flexible(
+              child: Text(
+                l.findSchemes,
+                style: const TextStyle(
+                  fontSize: 17,
+                  fontWeight: FontWeight.w700,
+                  letterSpacing: 0.5,
+                ),
+                overflow: TextOverflow.ellipsis,
+                maxLines: 1,
               ),
             ),
           ],
@@ -1132,7 +1141,7 @@ class _FarmerInputScreenState extends State<FarmerInputScreen>
 
   String _cropEmoji(String crop) {
     const map = {
-      'Rice': '🌾',
+      'Rice': '�',
       'Wheat': '🌾',
       'Cotton': '🏵️',
       'Sugarcane': '🎋',
@@ -1150,7 +1159,6 @@ class _FarmerInputScreenState extends State<FarmerInputScreen>
       'Oilseeds': '🌻',
       'Jute': '🧵',
       'Tobacco': '🍂',
-      'Paddy': '🌾',
       'Fisheries': '🐟',
       'Livestock': '🐄',
     };
@@ -1177,7 +1185,6 @@ class _FarmerInputScreenState extends State<FarmerInputScreen>
       CropTypes.oilseeds: l.oilseeds,
       CropTypes.jute: l.jute,
       CropTypes.tobacco: l.tobacco,
-      CropTypes.paddy: 'Paddy',
     };
     return map[cropValue] ?? cropValue;
   }
@@ -1209,9 +1216,8 @@ class _CropPickerSheetState extends State<_CropPickerSheet> {
   // All crops with their keys, values, and emoji icons
   static const _crops = [
     // Most popular crops first
-    ('Rice', 'rice', '🌾'),
+    ('Rice', 'rice', '�'),
     ('Wheat', 'wheat', '🌾'),
-    ('Paddy', 'paddy', '🌾'),
     ('Cotton', 'cotton', '🏵️'),
     ('Sugarcane', 'sugarcane', '🎋'),
     ('Maize', 'maize', '🌽'),
@@ -1228,6 +1234,8 @@ class _CropPickerSheetState extends State<_CropPickerSheet> {
     ('Coffee', 'coffee', '☕'),
     ('Jute', 'jute', '🧵'),
     ('Tobacco', 'tobacco', '🍂'),
+    ('Fisheries', 'fisheries', '🐟'),
+    ('Livestock', 'livestock', '🐄'),
   ];
 
   List<(String, String, String)> get _filteredCrops {

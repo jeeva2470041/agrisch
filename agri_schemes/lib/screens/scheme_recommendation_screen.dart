@@ -253,27 +253,29 @@ class _SchemeRecommendationScreenState
           selectedItemColor: const Color(0xFF43A047),
           unselectedItemColor: Colors.white54,
           type: BottomNavigationBarType.fixed,
+          selectedFontSize: 11,
+          unselectedFontSize: 10,
           items: [
             BottomNavigationBarItem(
               icon: const Icon(Icons.search_rounded),
-              label: localizations.findSchemes,
+              label: localizations.translate('schemesNav'),
             ),
             BottomNavigationBarItem(
               icon: const Icon(Icons.cloud_outlined),
-              label: localizations.weather,
+              label: localizations.translate('weatherNav'),
             ),
             BottomNavigationBarItem(
               icon: const Icon(Icons.storefront_outlined),
-              label: localizations.marketPrices,
+              label: localizations.translate('marketNav'),
             ),
             BottomNavigationBarItem(
               icon: const Icon(Icons.auto_awesome_outlined),
-              label: localizations.translate('aiTools'),
+              label: localizations.translate('aiToolsNav'),
             ),
             BottomNavigationBarItem(
               icon: const Icon(Icons.settings_outlined),
               activeIcon: const Icon(Icons.settings),
-              label: localizations.translate('settings'),
+              label: localizations.translate('settingsNav'),
             ),
           ],
         ),
@@ -560,69 +562,76 @@ class _SchemeRecommendationScreenState
                 Row(
                   children: [
                     // Type badge (pill-shaped with color)
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 10,
-                        vertical: 5,
-                      ),
-                      decoration: BoxDecoration(
-                        color: theme.color.withValues(alpha: 0.12),
-                        borderRadius: BorderRadius.circular(20),
-                        border: Border.all(
-                          color: theme.color.withValues(alpha: 0.3),
-                        ),
-                      ),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Icon(theme.icon, size: 14, color: theme.color),
-                          const SizedBox(width: 5),
-                          Text(
-                            typeLabel,
-                            style: TextStyle(
-                              fontSize: 11,
-                              fontWeight: FontWeight.w700,
-                              color: theme.color,
-                              letterSpacing: 0.3,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    const Spacer(),
-                    // Benefit amount badge
-                    if (scheme.benefit.isNotEmpty)
-                      Container(
+                    Flexible(
+                      child: Container(
                         padding: const EdgeInsets.symmetric(
                           horizontal: 10,
                           vertical: 5,
                         ),
                         decoration: BoxDecoration(
-                          color: Colors.amber.shade50,
+                          color: theme.color.withValues(alpha: 0.12),
                           borderRadius: BorderRadius.circular(20),
-                          border: Border.all(color: Colors.amber.shade200),
+                          border: Border.all(
+                            color: theme.color.withValues(alpha: 0.3),
+                          ),
                         ),
                         child: Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            Icon(
-                              Icons.currency_rupee,
-                              size: 12,
-                              color: Colors.amber.shade800,
-                            ),
-                            const SizedBox(width: 2),
+                            Icon(theme.icon, size: 14, color: theme.color),
+                            const SizedBox(width: 5),
                             Flexible(
                               child: Text(
-                                scheme.benefit,
+                                typeLabel,
                                 style: TextStyle(
                                   fontSize: 11,
                                   fontWeight: FontWeight.w700,
-                                  color: Colors.amber.shade900,
+                                  color: theme.color,
+                                  letterSpacing: 0.3,
                                 ),
                                 overflow: TextOverflow.ellipsis,
                               ),
                             ),
                           ],
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    // Benefit amount badge
+                    if (scheme.benefit.isNotEmpty)
+                      Flexible(
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 10,
+                            vertical: 5,
+                          ),
+                          decoration: BoxDecoration(
+                            color: Colors.amber.shade50,
+                            borderRadius: BorderRadius.circular(20),
+                            border: Border.all(color: Colors.amber.shade200),
+                          ),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Icon(
+                                Icons.currency_rupee,
+                                size: 12,
+                                color: Colors.amber.shade800,
+                              ),
+                              const SizedBox(width: 2),
+                              Flexible(
+                                child: Text(
+                                  scheme.benefit,
+                                  style: TextStyle(
+                                    fontSize: 11,
+                                    fontWeight: FontWeight.w700,
+                                    color: Colors.amber.shade900,
+                                  ),
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
                       ),
                   ],
@@ -715,9 +724,11 @@ class _SchemeRecommendationScreenState
                                 ? localizations.stopSpeaking
                                 : localizations.listenExplanation,
                             style: const TextStyle(
-                              fontSize: 12,
+                              fontSize: 11,
                               fontWeight: FontWeight.w600,
                             ),
+                            overflow: TextOverflow.ellipsis,
+                            maxLines: 1,
                           ),
                         ),
                       ),
@@ -753,9 +764,11 @@ class _SchemeRecommendationScreenState
                           label: Text(
                             localizations.howToApply,
                             style: const TextStyle(
-                              fontSize: 12,
+                              fontSize: 11,
                               fontWeight: FontWeight.w600,
                             ),
+                            overflow: TextOverflow.ellipsis,
+                            maxLines: 1,
                           ),
                         ),
                       ),

@@ -163,6 +163,13 @@ const Map<String, String> malayalamTranslations = {
   'dashboard': 'ഡാഷ്‌ബോർഡ്',
   'aiTools': 'AI ടൂളുകൾ',
 
+  // Short nav-bar labels
+  'schemesNav': 'പദ്ധതികൾ',
+  'weatherNav': 'കാലാവസ്ഥ',
+  'marketNav': 'വിപണി',
+  'aiToolsNav': 'AI',
+  'settingsNav': 'ക്രമീകരണം',
+
   // Voice NLP
   'voiceInputTitle': 'ശബ്ദ ഇൻപുട്ട്',
   'voiceInputSubtitle': 'നിങ്ങളുടെ കൃഷി വിവരങ്ങൾ പറയുക',

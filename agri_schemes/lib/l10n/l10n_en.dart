@@ -196,6 +196,13 @@ const Map<String, String> englishTranslations = {
   'dashboard': 'Dashboard',
   'aiTools': 'AI Tools',
 
+  // Short nav-bar labels (max ~8 chars for bottom nav)
+  'schemesNav': 'Schemes',
+  'weatherNav': 'Weather',
+  'marketNav': 'Market',
+  'aiToolsNav': 'AI Tools',
+  'settingsNav': 'Settings',
+
   // Voice NLP
   'voiceInputTitle': 'Voice Input',
   'voiceInputSubtitle': 'Speak your farm details',

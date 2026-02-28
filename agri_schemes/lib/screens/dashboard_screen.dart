@@ -191,30 +191,32 @@ class _DashboardScreenState extends State<DashboardScreen>
           selectedItemColor: _accentGreen,
           unselectedItemColor: Colors.white54,
           type: BottomNavigationBarType.fixed,
+          selectedFontSize: 11,
+          unselectedFontSize: 10,
           items: [
             BottomNavigationBarItem(
               icon: const Icon(Icons.search_rounded),
-              label: l.findSchemes,
+              label: l.translate('schemesNav'),
             ),
             BottomNavigationBarItem(
               icon: const Icon(Icons.cloud_outlined),
               activeIcon: const Icon(Icons.cloud),
-              label: l.weather,
+              label: l.translate('weatherNav'),
             ),
             BottomNavigationBarItem(
               icon: const Icon(Icons.storefront_outlined),
               activeIcon: const Icon(Icons.storefront),
-              label: l.marketPrices,
+              label: l.translate('marketNav'),
             ),
             BottomNavigationBarItem(
               icon: const Icon(Icons.auto_awesome_outlined),
               activeIcon: const Icon(Icons.auto_awesome),
-              label: l.translate('aiTools'),
+              label: l.translate('aiToolsNav'),
             ),
             BottomNavigationBarItem(
               icon: const Icon(Icons.settings_outlined),
               activeIcon: const Icon(Icons.settings),
-              label: l.translate('settings'),
+              label: l.translate('settingsNav'),
             ),
           ],
         ),

@@ -163,6 +163,13 @@ const Map<String, String> hindiTranslations = {
   'dashboard': 'डैशबोर्ड',
   'aiTools': 'AI उपकरण',
 
+  // Short nav-bar labels
+  'schemesNav': 'योजनाएं',
+  'weatherNav': 'मौसम',
+  'marketNav': 'बाज़ार',
+  'aiToolsNav': 'AI',
+  'settingsNav': 'सेटिंग्स',
+
   // Voice NLP
   'voiceInputTitle': 'वॉइस इनपुट',
   'voiceInputSubtitle': 'अपने खेत का विवरण बोलें',

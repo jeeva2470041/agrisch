@@ -80,7 +80,7 @@ test_case("6. Andhra Pradesh Rice (3ha)", "Andhra Pradesh", "Rice", 3.0)
 
 # 7. Telangana
 # Should get: central schemes + Rythu Bandhu
-test_case("7. Telangana Paddy (2ha)", "Telangana", "Paddy", 2.0)
+test_case("7. Telangana Rice (2ha)", "Telangana", "Rice", 2.0)
 
 # 8. Non-existent state (should get zero)
 test_case("8. Unknown State (should be empty)", "Atlantis", "Rice", 1.0)
