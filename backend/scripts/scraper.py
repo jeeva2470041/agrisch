@@ -9,10 +9,14 @@ Sources:
     5. nabard.org           — NABARD Agricultural Loans & Subsidies
 
 Usage:
-    python scraper.py                     # Scrape and save to schemes_scraped.json
-    python scraper.py --insert            # Scrape and insert directly into MongoDB
-    python scraper.py --output out.json   # Custom output path
+    python -m scripts.scraper                      (from backend/)
+    python scripts/scraper.py                       (from backend/)
+    python scripts/scraper.py --insert              (scrape + insert into MongoDB)
+    python scripts/scraper.py --output out.json     (custom output path)
 """
+import sys
+import os
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 
 import json
 import sys

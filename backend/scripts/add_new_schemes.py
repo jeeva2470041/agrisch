@@ -7,10 +7,14 @@ do not already exist. Normalises data to match the existing schema
 (e.g. "All India" -> "All", null -> defaults, adds descriptions).
 
 Usage:
-    python add_new_schemes.py
+    python -m scripts.add_new_schemes   (from backend/)
+    python scripts/add_new_schemes.py    (from backend/)
 """
-import json
+import sys
 import os
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
+
+import json
 from db import get_schemes_collection, init_indexes
 
 

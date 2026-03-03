@@ -7,18 +7,18 @@ import logging
 from flask import Blueprint, request, jsonify
 from db import get_schemes_collection
 from config import DEFAULT_PAGE_SIZE, MAX_PAGE_SIZE
-from weather_service import get_weather
-from market_service import get_market_prices
-from ai_service import ask_ai
-from voice_nlp_service import parse_voice_input
-from ranking_service import rank_schemes
-from forecast_service import get_price_forecast
-from disease_service import detect_disease
-from yield_service import predict_yield
-from soil_service import analyze_soil_image, analyze_soil_manual
-from crop_recommender_service import recommend_crops
-from alert_service import check_weather_alerts, check_price_alerts
-from calendar_service import get_crop_calendar
+from services.weather_service import get_weather
+from services.market_service import get_market_prices
+from services.ai_service import ask_ai
+from services.voice_nlp_service import parse_voice_input
+from services.ranking_service import rank_schemes
+from services.forecast_service import get_price_forecast
+from services.disease_service import detect_disease
+from services.yield_service import predict_yield
+from services.soil_service import analyze_soil_image, analyze_soil_manual
+from services.crop_recommender_service import recommend_crops
+from services.alert_service import check_weather_alerts, check_price_alerts
+from services.calendar_service import get_crop_calendar
 
 api_bp = Blueprint("api", __name__)
 

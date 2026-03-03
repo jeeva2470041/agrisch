@@ -5,8 +5,8 @@ Provides weather disaster warnings and price trigger notifications.
 """
 import logging
 from datetime import datetime
-from weather_service import get_weather
-from market_service import get_market_prices
+from services.weather_service import get_weather
+from services.market_service import get_market_prices
 
 logger = logging.getLogger(__name__)
 

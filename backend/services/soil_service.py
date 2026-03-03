@@ -1,7 +1,7 @@
 """
 AgriScheme Backend — Soil Health Analysis Service.
-Uses Google Gemini Vision API to analyze soil images and manual soil test data
-to provide health assessments, deficiency detection, and fertilizer recommendations.
+Uses offline color analysis (primary) for soil images, with optional
+Gemini Vision fallback. Manual soil test analysis uses ICAR rule engine.
 """
 import os
 import base64
@@ -21,6 +21,12 @@ GEMINI_URL = (
 )
 
 MAX_IMAGE_SIZE = 4 * 1024 * 1024  # 4 MB
+
+# Choose image analysis mode: "offline" (default) | "gemini" | "hybrid"
+# "offline"  — uses color analysis only (fast, free, no API needed)
+# "gemini"   — uses Gemini Vision only (needs API key + network)
+# "hybrid"   — tries offline first; falls back to Gemini on low confidence
+IMAGE_ANALYSIS_MODE = os.getenv("SOIL_IMAGE_MODE", "offline").lower()
 
 
 def _clean_gemini_json(raw_text: str) -> dict:
@@ -67,25 +73,13 @@ def _clean_gemini_json(raw_text: str) -> dict:
     return json.loads(cleaned)
 
 
-def analyze_soil_image(image_base64: str, language: str = "en") -> dict:
-    """Analyze a soil image using Gemini Vision.
-
-    Args:
-        image_base64: Base64-encoded soil image (JPEG/PNG).
-        language: Language code (en, hi, ta, ml).
-
-    Returns:
-        dict with soil analysis results or 'error' key.
-    """
+def _analyze_soil_image_gemini(image_base64: str, language: str = "en") -> dict:
+    """Analyze a soil image using Gemini Vision (API-based fallback)."""
     if not GEMINI_API_KEY:
         return {"error": "GEMINI_API_KEY is not configured on the server."}
-    if not image_base64:
-        return {"error": "No image provided."}
 
     try:
         raw_bytes = base64.b64decode(image_base64)
-        if len(raw_bytes) > MAX_IMAGE_SIZE:
-            return {"error": "Image too large. Maximum 4MB allowed."}
     except Exception:
         return {"error": "Invalid base64 image data."}
 
@@ -148,7 +142,6 @@ If the image is not soil, return health_score=0 and appropriate error in color_a
             return {"error": "No response from AI model."}
 
         parts = candidates[0].get("content", {}).get("parts", [])
-        # Gemini 2.5 Flash may return "thought" parts before actual text.
         raw_text = ""
         for part in reversed(parts):
             if part.get("thought"):
@@ -160,8 +153,6 @@ If the image is not soil, return health_score=0 and appropriate error in color_a
             return {"error": "Empty response from AI model."}
 
         result = _clean_gemini_json(raw_text)
-
-        # Ensure required fields
         result.setdefault("soil_type", "Unknown")
         result.setdefault("ph_estimate", 7.0)
         result.setdefault("organic_matter", "Medium")
@@ -174,7 +165,7 @@ If the image is not soil, return health_score=0 and appropriate error in color_a
         result.setdefault("recommendations", [])
         result.setdefault("suitable_crops", [])
         result.setdefault("confidence", 0.5)
-
+        result["analysis_method"] = "gemini_vision"
         return result
 
     except json.JSONDecodeError as e:
@@ -185,122 +176,99 @@ If the image is not soil, return health_score=0 and appropriate error in color_a
         return {"error": f"Analysis failed: {e}"}
 
 
-def analyze_soil_manual(soil_data: dict, language: str = "en") -> dict:
-    """Analyze soil from manual test report values using Gemini.
+def analyze_soil_image(image_base64: str, language: str = "en") -> dict:
+    """Analyze a soil image.
+
+    Mode is controlled by SOIL_IMAGE_MODE env var (default: 'offline'):
+      - 'offline': Color-based analysis (fast, free, works without API)
+      - 'gemini':  Gemini Vision API (needs key + network)
+      - 'hybrid':  Tries offline first; if confidence < 0.40, falls back to Gemini
 
     Args:
-        soil_data: dict with keys: ph, nitrogen, phosphorus, potassium,
-                   organic_carbon, soil_type (all optional but at least one required).
-        language: Language code.
+        image_base64: Base64-encoded soil image (JPEG/PNG/WEBP).
+        language: Language code (en, hi, ta, ml).
 
     Returns:
         dict with soil analysis results or 'error' key.
     """
-    if not GEMINI_API_KEY:
-        return {"error": "GEMINI_API_KEY is not configured on the server."}
-
-    lang_map = {"en": "English", "hi": "Hindi", "ta": "Tamil", "ml": "Malayalam"}
-    lang_name = lang_map.get(language, "English")
-
-    # Build context from provided values
-    context_parts = []
-    if "ph" in soil_data:
-        context_parts.append(f"pH: {soil_data['ph']}")
-    if "nitrogen" in soil_data:
-        context_parts.append(f"Nitrogen (N): {soil_data['nitrogen']} kg/hectare")
-    if "phosphorus" in soil_data:
-        context_parts.append(f"Phosphorus (P): {soil_data['phosphorus']} kg/hectare")
-    if "potassium" in soil_data:
-        context_parts.append(f"Potassium (K): {soil_data['potassium']} kg/hectare")
-    if "organic_carbon" in soil_data:
-        context_parts.append(f"Organic Carbon: {soil_data['organic_carbon']}%")
-    if "soil_type" in soil_data:
-        context_parts.append(f"Soil Type: {soil_data['soil_type']}")
-
-    if not context_parts:
-        return {"error": "At least one soil parameter is required."}
-
-    soil_context = "\n".join(context_parts)
-
-    prompt = f"""You are an expert soil scientist and agronomist. A farmer has provided the following soil test report values:
-
-{soil_context}
-
-Based on these values, provide a comprehensive soil health analysis.
-
-Respond in {lang_name} with the following JSON structure ONLY (no markdown, no explanation outside JSON):
-{{
-    "soil_type": "identified or confirmed soil type",
-    "ph_estimate": {soil_data.get('ph', 7.0)},
-    "organic_matter": "Low / Medium / High",
-    "moisture_level": "Cannot determine from test data",
-    "drainage": "estimated based on soil type",
-    "color_analysis": "Description based on soil type and nutrient levels",
-    "texture_analysis": "Description based on soil type",
-    "health_score": 7,
-    "deficiencies": ["list of nutrient deficiencies identified"],
-    "recommendations": [
-        "specific fertilizer recommendation with quantity per hectare",
-        "soil amendment suggestions"
-    ],
-    "suitable_crops": ["crops suitable for this soil"],
-    "confidence": 0.85,
-    "npk_status": {{
-        "nitrogen": "Low / Medium / High",
-        "phosphorus": "Low / Medium / High",
-        "potassium": "Low / Medium / High"
-    }}
-}}
-
-health_score: 1-10 (10 = excellent). Be specific with fertilizer quantities."""
-
-    payload = {
-        "contents": [{"parts": [{"text": prompt}]}],
-        "generationConfig": {"temperature": 0.3, "maxOutputTokens": 2048},
-    }
+    if not image_base64:
+        return {"error": "No image provided."}
 
     try:
-        resp = requests.post(
-            GEMINI_URL, params={"key": GEMINI_API_KEY},
-            json=payload, timeout=30,
-        )
-        if resp.status_code != 200:
-            logger.error("Gemini soil manual error %s: %s", resp.status_code, resp.text)
-            return {"error": f"AI service returned status {resp.status_code}"}
+        raw_bytes = base64.b64decode(image_base64)
+        if len(raw_bytes) > MAX_IMAGE_SIZE:
+            return {"error": "Image too large. Maximum 4MB allowed."}
+    except Exception:
+        return {"error": "Invalid base64 image data."}
 
-        data = resp.json()
-        candidates = data.get("candidates", [])
-        if not candidates:
-            return {"error": "No response from AI model."}
+    # --- Gemini-only mode ---
+    if IMAGE_ANALYSIS_MODE == "gemini":
+        return _analyze_soil_image_gemini(image_base64, language)
 
-        parts = candidates[0].get("content", {}).get("parts", [])
-        # Gemini 2.5 Flash may return "thought" parts before actual text.
-        raw_text = ""
-        for part in reversed(parts):
-            if part.get("thought"):
-                continue
-            if part.get("text", "").strip():
-                raw_text = part["text"]
-                break
-        if not raw_text:
-            return {"error": "Empty response from AI model."}
+    # --- Offline color analysis ---
+    from services.soil_image_analyzer import analyze_soil_from_image
 
-        result = _clean_gemini_json(raw_text)
+    offline_result = analyze_soil_from_image(image_base64)
+    if "error" in offline_result:
+        logger.warning("Offline image analysis failed: %s", offline_result["error"])
+        # Try Gemini as fallback if available
+        if GEMINI_API_KEY:
+            logger.info("Falling back to Gemini Vision")
+            return _analyze_soil_image_gemini(image_base64, language)
+        return offline_result
 
-        result.setdefault("soil_type", soil_data.get("soil_type", "Unknown"))
-        result.setdefault("ph_estimate", soil_data.get("ph", 7.0))
-        result.setdefault("organic_matter", "Medium")
-        result.setdefault("health_score", 5)
-        result.setdefault("deficiencies", [])
-        result.setdefault("recommendations", [])
-        result.setdefault("suitable_crops", [])
-        result.setdefault("confidence", 0.7)
+    # --- Hybrid mode: check confidence ---
+    if IMAGE_ANALYSIS_MODE == "hybrid":
+        confidence = offline_result.get("confidence", 0)
+        if confidence < 0.40 and GEMINI_API_KEY:
+            logger.info(
+                "Offline confidence %.2f < 0.40 — upgrading to Gemini Vision",
+                confidence,
+            )
+            gemini_result = _analyze_soil_image_gemini(image_base64, language)
+            if "error" not in gemini_result:
+                return gemini_result
+            # If Gemini also fails, return offline result anyway
+            logger.warning("Gemini fallback failed, using offline result")
 
-        return result
+    return offline_result
 
-    except json.JSONDecodeError as e:
-        logger.error("Soil manual analysis JSON parse error: %s", e)
-        return {"error": "Failed to parse AI response."}
-    except Exception as e:
-        logger.error("Soil manual analysis error: %s", e)
-        return {"error": f"Analysis failed: {e}"}
+
+def analyze_soil_manual(soil_data: dict, language: str = "en") -> dict:
+    """Analyze soil from manual test report values using ICAR rule-based engine.
+
+    This replaces the previous Gemini API call with a deterministic,
+    offline rule-based analysis based on ICAR standards.
+    No API key or network connectivity required.
+
+    Args:
+        soil_data: dict with keys: ph, nitrogen, phosphorus, potassium,
+                   organic_carbon, soil_type (all optional but at least one required).
+        language: Language code (unused — rules return English; translation
+                  can be added later if needed).
+
+    Returns:
+        dict with soil analysis results or 'error' key.
+    """
+    from services.soil_rules_engine import analyze_soil_rulebased
+
+    if not soil_data:
+        return {"error": "No soil data provided."}
+
+    # Validate and convert numeric fields
+    numeric_fields = ["ph", "nitrogen", "phosphorus", "potassium", "organic_carbon"]
+    cleaned = {}
+    for key in numeric_fields:
+        if key in soil_data and soil_data[key] is not None:
+            try:
+                cleaned[key] = float(soil_data[key])
+            except (ValueError, TypeError):
+                return {"error": f"Invalid value for {key}: must be a number."}
+
+    if "soil_type" in soil_data and soil_data["soil_type"]:
+        cleaned["soil_type"] = str(soil_data["soil_type"])
+
+    if not cleaned:
+        return {"error": "At least one soil parameter is required."}
+
+    return analyze_soil_rulebased(cleaned)

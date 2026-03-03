@@ -4,8 +4,13 @@ Populates the schemes collection with comprehensive, real-world government
 agriculture scheme data including all required fields.
 
 Usage:
-    python seed_db.py
+    python -m scripts.seed_db       (from backend/)
+    python scripts/seed_db.py        (from backend/)
 """
+import sys
+import os
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
+
 from pprint import pprint
 from db import get_schemes_collection, init_indexes
 

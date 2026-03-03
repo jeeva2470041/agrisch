@@ -9,8 +9,8 @@ import logging
 import requests
 from dotenv import load_dotenv
 
-from weather_service import get_weather
-from market_service import get_market_prices
+from services.weather_service import get_weather
+from services.market_service import get_market_prices
 
 load_dotenv()
 
