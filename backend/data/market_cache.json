@@ -1,0 +1,36 @@
+{
+  "Tamil Nadu:Coconut": {
+    "timestamp": 1772545667.4273734,
+    "data": {
+      "crop": "Coconut",
+      "price": 5613.0,
+      "min_price": 3500.0,
+      "max_price": 8000.0,
+      "unit": "₹/quintal",
+      "change": 2213.0,
+      "change_pct": 65.1,
+      "trend": "up",
+      "mandi": "Paramathivelur(Uzhavar Sandhai ) APMC",
+      "data_date": "03/03/2026",
+      "source": "data.gov.in (AGMARKNET)",
+      "records_count": 50
+    }
+  },
+  "Tamil Nadu:Groundnut": {
+    "timestamp": 1772545669.8370602,
+    "data": {
+      "crop": "Groundnut",
+      "price": 6709.0,
+      "min_price": 4200.0,
+      "max_price": 9000.0,
+      "unit": "₹/quintal",
+      "change": -74.0,
+      "change_pct": -1.1,
+      "trend": "down",
+      "mandi": "Tiruthuraipoondi(Uzhavar Sandhai ) APMC",
+      "data_date": "03/03/2026",
+      "source": "data.gov.in (AGMARKNET)",
+      "records_count": 49
+    }
+  }
+}

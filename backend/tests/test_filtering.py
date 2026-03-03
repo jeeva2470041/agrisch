@@ -31,7 +31,7 @@ def print_schemes(case_name, data):
         print(f"     Link: {s.get('official_link', 'N/A')}")
 
 
-def test_case(name, state, crop, land_size, season=None):
+def run_case(name, state, crop, land_size, season=None):
     payload = {
         "state": state,
         "crop": crop,
@@ -50,41 +50,42 @@ def test_case(name, state, crop, land_size, season=None):
         print(f"\n❌ {name} — Connection error: {e}")
 
 
-print("=" * 60)
-print("AgriScheme — Eligibility Filtering Tests")
-print("=" * 60)
+if __name__ == "__main__":
+    print("=" * 60)
+    print("AgriScheme — Eligibility Filtering Tests")
+    print("=" * 60)
 
-# 1. Standard: Tamil Nadu, Rice, Small Farmer, Kharif
-# Should get: ALL central schemes + TN Rice scheme + Small Farmer scheme
-test_case("1. TN Rice Small Farmer (1.0ha, Kharif)", "Tamil Nadu", "Rice", 1.0, "Kharif")
+    # 1. Standard: Tamil Nadu, Rice, Small Farmer, Kharif
+    # Should get: ALL central schemes + TN Rice scheme + Small Farmer scheme
+    run_case("1. TN Rice Small Farmer (1.0ha, Kharif)", "Tamil Nadu", "Rice", 1.0, "Kharif")
 
-# 2. Large Farmer: Tamil Nadu, Rice, Large Farmer
-# Should get: ALL central schemes + TN Rice scheme, but NOT Small Farmer scheme
-test_case("2. TN Rice Large Farmer (5.0ha)", "Tamil Nadu", "Rice", 5.0)
+    # 2. Large Farmer: Tamil Nadu, Rice, Large Farmer
+    # Should get: ALL central schemes + TN Rice scheme, but NOT Small Farmer scheme
+    run_case("2. TN Rice Large Farmer (5.0ha)", "Tamil Nadu", "Rice", 5.0)
 
-# 3. Punjab, Wheat, Rabi
-# Should get: central schemes + Punjab Wheat scheme
-test_case("3. Punjab Wheat (3ha, Rabi)", "Punjab", "Wheat", 3.0, "Rabi")
+    # 3. Punjab, Wheat, Rabi
+    # Should get: central schemes + Punjab Wheat scheme
+    run_case("3. Punjab Wheat (3ha, Rabi)", "Punjab", "Wheat", 3.0, "Rabi")
 
-# 4. Kerala, Coconut
-# Should get: central schemes + Kerala Coconut scheme
-test_case("4. Kerala Coconut (1ha)", "Kerala", "Coconut", 1.0)
+    # 4. Kerala, Coconut
+    # Should get: central schemes + Kerala Coconut scheme
+    run_case("4. Kerala Coconut (1ha)", "Kerala", "Coconut", 1.0)
 
-# 5. Maharashtra, Sugarcane
-# Should get: central schemes + Jalyukt Shivar (no crop filter on it)
-test_case("5. Maharashtra Sugarcane (2ha)", "Maharashtra", "Sugarcane", 2.0)
+    # 5. Maharashtra, Sugarcane
+    # Should get: central schemes + Jalyukt Shivar (no crop filter on it)
+    run_case("5. Maharashtra Sugarcane (2ha)", "Maharashtra", "Sugarcane", 2.0)
 
-# 6. Andhra Pradesh, All crops
-# Should get: central schemes + YSR Rythu Bharosa
-test_case("6. Andhra Pradesh Rice (3ha)", "Andhra Pradesh", "Rice", 3.0)
+    # 6. Andhra Pradesh, All crops
+    # Should get: central schemes + YSR Rythu Bharosa
+    run_case("6. Andhra Pradesh Rice (3ha)", "Andhra Pradesh", "Rice", 3.0)
 
-# 7. Telangana
-# Should get: central schemes + Rythu Bandhu
-test_case("7. Telangana Rice (2ha)", "Telangana", "Rice", 2.0)
+    # 7. Telangana
+    # Should get: central schemes + Rythu Bandhu
+    run_case("7. Telangana Rice (2ha)", "Telangana", "Rice", 2.0)
 
-# 8. Non-existent state (should get zero)
-test_case("8. Unknown State (should be empty)", "Atlantis", "Rice", 1.0)
+    # 8. Non-existent state (should get zero)
+    run_case("8. Unknown State (should be empty)", "Atlantis", "Rice", 1.0)
 
-print(f"\n{'=' * 60}")
-print("Done. Review results above.")
-print("=" * 60)
+    print(f"\n{'=' * 60}")
+    print("Done. Review results above.")
+    print("=" * 60)
