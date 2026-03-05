@@ -316,4 +316,17 @@ const Map<String, String> tamilTranslations = {
   'farmerProfile': 'விவசாயி சுயவிவரம்',
   'soilPh': 'மண் pH',
   'saveProfile': 'சுயவிவரத்தை சேமி',
+
+  // Document Guide
+  'docGuideTitle': 'இந்த ஆவணத்தை பெறுவது எப்படி?',
+  'docGuideIssuedBy': 'வழங்கும் அலுவலகம்',
+  'docGuideTime': 'காலம்',
+  'docGuideFee': 'கட்டணம்',
+  'docGuideSteps': 'படிப்படியான வழிமுறை',
+  'docGuideDocsNeeded': 'தேவையான ஆவணங்கள்',
+  'docGuideTips': 'பயனுள்ள குறிப்புகள்',
+  'docGuideLinks': 'பயனுள்ள இணைப்புகள்',
+  'docGuideCscNote': 'எந்த அரசு ஆவணத்திற்கும் விண்ணப்பிக்க அருகிலுள்ள பொது சேவை மையம் (CSC) அல்லது e-சேவா மையத்தில் உதவி பெறவும்.',
+  'dontHaveThisDoc': 'இது உங்களிடம் இல்லையா? பெற அறிய தொடவும்',
+  'howToGetDoc': 'இந்த ஆவணத்தை பெறுவது எப்படி',
 };

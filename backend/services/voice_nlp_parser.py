@@ -162,6 +162,7 @@ UNIT_TO_HECTARE = {
     "kanal": 0.0505, "kanals": 0.0505,
     "marla": 0.00505, "marlas": 0.00505,
     "katha": 0.0338, "kathas": 0.0338, "kattah": 0.0338,
+    "actor": 0.4047, "actors": 0.4047,
     # Hindi
     "hektar": 1.0, "ekad": 0.4047, "ekad": 0.4047,
     "beegha": 0.25,

@@ -19,6 +19,7 @@ from services.soil_service import analyze_soil_image, analyze_soil_manual
 from services.crop_recommender_service import recommend_crops
 from services.alert_service import check_weather_alerts, check_price_alerts
 from services.calendar_service import get_crop_calendar
+from services.document_guide_service import get_document_guide, get_all_supported_documents
 
 api_bp = Blueprint("api", __name__)
 
@@ -736,5 +737,46 @@ def crop_calendar_endpoint():
 
         return jsonify({"success": True, **result})
 
+    except Exception as exc:
+        return jsonify({"error": f"Internal server error: {exc}"}), 500
+
+
+# ---------------------------------------------------------------------------
+# GET /api/document-guide  —  How to apply for a required document
+# ---------------------------------------------------------------------------
+@api_bp.route("/document-guide", methods=["GET"])
+def document_guide_endpoint():
+    """Return step-by-step guidance for obtaining a specific document.
+
+    Query params:
+        document (str, required) — document name (e.g., 'Aadhaar Card')
+    """
+    try:
+        document = request.args.get("document", "").strip()
+        if not document:
+            return jsonify({"error": "document query parameter is required"}), 400
+        if len(document) > 200:
+            return jsonify({"error": "document parameter too long"}), 400
+
+        result = get_document_guide(document)
+
+        if "error" in result:
+            return jsonify({"success": False, **result}), 404
+
+        return jsonify({"success": True, "guide": result})
+
+    except Exception as exc:
+        return jsonify({"error": f"Internal server error: {exc}"}), 500
+
+
+# ---------------------------------------------------------------------------
+# GET /api/supported-documents  —  List all documents with guides
+# ---------------------------------------------------------------------------
+@api_bp.route("/supported-documents", methods=["GET"])
+def supported_documents_endpoint():
+    """Return list of all documents for which application guides are available."""
+    try:
+        documents = get_all_supported_documents()
+        return jsonify({"success": True, "documents": documents})
     except Exception as exc:
         return jsonify({"error": f"Internal server error: {exc}"}), 500

@@ -285,4 +285,17 @@ const Map<String, String> malayalamTranslations = {
   'farmerProfile': 'കർഷക പ്രൊഫൈൽ',
   'soilPh': 'മണ്ണിന്റെ pH',
   'saveProfile': 'പ്രൊഫൈൽ സേവ് ചെയ്യുക',
+
+  // Document Guide
+  'docGuideTitle': 'ഈ ഡോക്യുമെന്റ് എങ്ങനെ നേടാം',
+  'docGuideIssuedBy': 'നൽകുന്നത്',
+  'docGuideTime': 'സമയം',
+  'docGuideFee': 'ഫീസ്',
+  'docGuideSteps': 'ചുവട് വഴി പ്രക്രിയ',
+  'docGuideDocsNeeded': 'ആവശ്യമായ ഡോക്യുമെന്റുകൾ',
+  'docGuideTips': 'ഉപയോഗപ്രദമായ ടിപ്പുകൾ',
+  'docGuideLinks': 'ഉപയോഗപ്രദമായ ലിങ്കുകൾ',
+  'docGuideCscNote': 'എന്തെങ്കിലും സർക്കാർ ഡോക്യുമെന്റിന് അപേക്ഷിക്കാന് സഹായത്തിനായി അടുത്തുള്ള കോമൺ സർവീസ് സെന്റർ (CSC) അല്ലെങ്കിൽ e-സേവ സെന്റർ സന്ദർശിക്കുക.',
+  'dontHaveThisDoc': 'ഇത് ഇല്ലേ? എങ്ങനെ നേടാമെന്ന് അറിയാന് ടാപ്പ് ചെയ്യൂ',
+  'howToGetDoc': 'ഈ ഡോക്യുമെന്റ് എങ്ങനെ നേടാം',
 };

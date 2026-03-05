@@ -318,4 +318,17 @@ const Map<String, String> englishTranslations = {
   'farmerProfile': 'Farmer Profile',
   'soilPh': 'Soil pH',
   'saveProfile': 'Save Profile',
+
+  // Document Guide
+  'docGuideTitle': 'How to Get This Document',
+  'docGuideIssuedBy': 'Issued by',
+  'docGuideTime': 'Time',
+  'docGuideFee': 'Fee',
+  'docGuideSteps': 'Step-by-Step Process',
+  'docGuideDocsNeeded': 'Documents You Will Need',
+  'docGuideTips': 'Helpful Tips',
+  'docGuideLinks': 'Useful Links',
+  'docGuideCscNote': 'You can also visit your nearest Common Service Centre (CSC) or e-Seva centre for help with applying for any government document. They can assist with filling forms and uploading documents.',
+  'dontHaveThisDoc': "Don't have this? Tap to learn how to get it",
+  'howToGetDoc': 'How to get this document',
 };

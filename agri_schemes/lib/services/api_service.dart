@@ -3,6 +3,7 @@ import 'package:http/http.dart' as http;
 import 'package:flutter/foundation.dart';
 import '../models/farmer_input_model.dart';
 import '../models/scheme_model.dart';
+import '../models/document_guide_model.dart';
 
 class ApiService {
   // For physical device via ADB reverse: localhost tunnels through USB.
@@ -459,6 +460,32 @@ class ApiService {
       return null;
     } catch (e) {
       debugPrint('Crop calendar error: $e');
+      return null;
+    }
+  }
+
+  // ─────────────────────────────────────────────────
+  // Document Guide API
+  // ─────────────────────────────────────────────────
+  Future<DocumentGuideModel?> getDocumentGuide(String documentName) async {
+    try {
+      final response = await http
+          .get(
+            Uri.parse(
+                '$baseUrl/api/document-guide?document=${Uri.encodeComponent(documentName)}'),
+          )
+          .timeout(const Duration(seconds: 10));
+
+      if (response.statusCode == 200) {
+        final body = json.decode(response.body) as Map<String, dynamic>;
+        if (body['success'] == true && body['guide'] != null) {
+          return DocumentGuideModel.fromJson(
+              body['guide'] as Map<String, dynamic>);
+        }
+      }
+      return null;
+    } catch (e) {
+      debugPrint('Document guide error: $e');
       return null;
     }
   }

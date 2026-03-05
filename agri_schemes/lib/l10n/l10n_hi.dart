@@ -285,4 +285,17 @@ const Map<String, String> hindiTranslations = {
   'farmerProfile': 'किसान प्रोफ़ाइल',
   'soilPh': 'मिट्टी pH',
   'saveProfile': 'प्रोफ़ाइल सेव करें',
+
+  // Document Guide
+  'docGuideTitle': 'यह दस्तावेज़ कैसे प्राप्त करें',
+  'docGuideIssuedBy': 'जारीकर्ता',
+  'docGuideTime': 'समय',
+  'docGuideFee': 'शुल्क',
+  'docGuideSteps': 'चरण-दर-चरण प्रक्रिया',
+  'docGuideDocsNeeded': 'आवश्यक दस्तावेज़',
+  'docGuideTips': 'उपयोगी सुझाव',
+  'docGuideLinks': 'उपयोगी लिंक',
+  'docGuideCscNote': 'आप किसी भी सरकारी दस्तावेज़ के लिए आवेदन करने में मदद के लिए अपने नजदीकी कॉमन सर्विस सेंटर (CSC) या e-सेवा केंद्र पर जा सकते हैं।',
+  'dontHaveThisDoc': 'यह नहीं है? जानें कैसे प्राप्त करें',
+  'howToGetDoc': 'यह दस्तावेज़ कैसे प्राप्त करें',
 };

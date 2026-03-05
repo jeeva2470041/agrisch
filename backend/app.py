@@ -75,3 +75,4 @@ if __name__ == "__main__":
         logger.warning("Could not initialise indexes: %s", exc)
 
     app.run(debug=FLASK_DEBUG, host="0.0.0.0", port=FLASK_PORT)
+k

@@ -4,6 +4,7 @@ import 'package:url_launcher/url_launcher.dart';
 import '../models/scheme_model.dart';
 import '../l10n/app_localizations.dart';
 import 'dashboard_screen.dart';
+import 'document_guide_screen.dart';
 import 'farmer_input_screen.dart';
 import 'settings_screen.dart';
 
@@ -310,10 +311,47 @@ class SchemeDetailScreen extends StatelessWidget {
                                     doc,
                                     style: const TextStyle(fontSize: 14),
                                   ),
-                                  trailing: const Icon(
-                                    Icons.check_circle,
-                                    color: _primary,
-                                    size: 20,
+                                  subtitle: GestureDetector(
+                                    onTap: () {
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (_) => DocumentGuideScreen(
+                                            documentName: doc,
+                                          ),
+                                        ),
+                                      );
+                                    },
+                                    child: Padding(
+                                      padding: const EdgeInsets.only(top: 4),
+                                      child: Text(
+                                        l.translate('dontHaveThisDoc'),
+                                        style: TextStyle(
+                                          fontSize: 12,
+                                          color: Colors.blue.shade600,
+                                          decoration: TextDecoration.underline,
+                                          decorationColor: Colors.blue.shade600,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                  trailing: IconButton(
+                                    tooltip: l.translate('howToGetDoc'),
+                                    icon: Icon(
+                                      Icons.help_outline,
+                                      color: Colors.orange.shade600,
+                                      size: 22,
+                                    ),
+                                    onPressed: () {
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (_) => DocumentGuideScreen(
+                                            documentName: doc,
+                                          ),
+                                        ),
+                                      );
+                                    },
                                   ),
                                 ),
                                 if (i < scheme.documentsRequired.length - 1)
